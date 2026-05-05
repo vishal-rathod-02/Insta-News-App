@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Dynamic OLED Soft variables */
+  --color-oled-black: #02010A;
+  --color-oled-surface: #0E0916;
+  --color-oled-border: #1C132B;
+  
+  --color-accent-amber: #F59E0B;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #FAFAFF; /* Frost Violet-White */
+    color: #120C1F; /* Deep Violet Black */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode default backgrounds */
+.dark body, html.dark body {
+    background-color: var(--color-oled-black);
+    color: #EFEAF7; /* Very Light Violet */
+}
+
+/* Base Neon Violet / OLED Theme classes */
+.gradient-primary {
+    background: linear-gradient(135deg, #8B5CF6, #F59E0B);
+    color: white;
+}
+
+.dark .gradient-primary {
+    background: linear-gradient(135deg, #7C3AED, #D97706);
+}
+
+.neon-glow {
+    box-shadow: 0 4px 20px -5px rgba(139, 92, 246, 0.4);
+}
+
+.dark .neon-glow {
+    box-shadow: 0 0 15px rgba(167, 139, 250, 0.5);
+}
+
+.glass-panel {
+    background: rgba(250, 250, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.dark .glass-panel {
+    background: rgba(14, 9, 22, 0.75); /* OLED Surface Transparent */
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Premium Gradient Overlay for cards and images */
+.glass-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Global Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #ddd6fe; /* violet-200 */
+  border-radius: 10px;
+}
+.dark ::-webkit-scrollbar-thumb, html.dark ::-webkit-scrollbar-thumb {
+  background-color: #2e1065; /* violet-900 */
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #c4b5fd; /* violet-300 */
+}
+.dark ::-webkit-scrollbar-thumb:hover, html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #4c1d95; /* violet-800 */
+}
+
+/* Maintain class for explicit usage if needed */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Hide scrollbar for elements with scrollbar-hide */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}

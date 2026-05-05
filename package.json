@@ -1,0 +1,20 @@
+{
+  "name": "insta-news-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "start": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "mongoose": "^9.6.1"
+  }
+}

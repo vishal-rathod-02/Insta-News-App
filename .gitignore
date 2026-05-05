@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+client/dist/
+server/dist/
+
+# Environment Variables - CRITICAL TO IGNORE
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+server/.env
+client/.env
+client/.env.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Misc
+espn.json
