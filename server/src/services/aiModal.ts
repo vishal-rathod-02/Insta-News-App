@@ -1,13 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-if (!GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY environment variable not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
 export const summarizeArticleWithGemini = async (
   title: string,
   content: string,
@@ -15,50 +5,43 @@ export const summarizeArticleWithGemini = async (
   language: string = "en"
 ): Promise<string> => {
   try {
-    if (!content || content.trim().length < 50) {
+    if (!content || content.trim().length < 20) {
       return "Not enough content available to summarize.";
     }
 
-    const languageInstruction = language === "hi" ? "Provide the summary in Hindi." : "Provide the summary in English.";
-    const modeInstruction = mode === "simple" 
-      ? "Summarize the article in a simple, easy-to-understand paragraph." 
-      : "Summarize the following article into 5 clear bullet points.";
+    // Manual Algorithm: Split content into sentences
+    // Using a basic regex to split by period, exclamation, or question mark followed by a space
+    const sentences = content
+      .split(/(?<=[.?!])\s+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 10);
 
-    const prompt = `
-You are a professional news editor.
-
-${modeInstruction}
-${languageInstruction}
-Keep it neutral, factual, and easy to read.
-Do not add assumptions or extra information.
-
-Article Title: "${title}"
-
-Article Content:
----
-${content.substring(0, 4000)}
----
-
-Summary:
-`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        temperature: 0.4,
-        maxOutputTokens: 300
-      }
-    });
-
-    if (!response.text) {
-      throw new Error("Empty response from Gemini API");
+    if (sentences.length === 0) {
+      return "Content could not be parsed for a summary.";
     }
 
-    return response.text.trim();
+    let summaryText = "";
+
+    if (mode === "simple") {
+      // Take the first 3 sentences for a simple paragraph
+      const paragraphSentences = sentences.slice(0, 3);
+      summaryText = paragraphSentences.join(" ");
+    } else {
+      // Default to bullet points: Take up to 5 sentences
+      const bulletSentences = sentences.slice(0, 5);
+      summaryText = bulletSentences.map(s => `* ${s}`).join("\n");
+    }
+
+    // Note for translation: Since we removed the AI, true translation requires a dedicated API.
+    // For now, we return the algorithmic extraction. If language is Hindi, we add a brief prefix note.
+    if (language === "hi") {
+      return `(नोट: एआई कोटा समाप्त हो गया है। यहाँ मूल लेख का सीधा सारांश दिया गया है)\n\n${summaryText}`;
+    }
+
+    return summaryText;
 
   } catch (error) {
-    console.error("Gemini API error:", error);
-    return "AI summary is currently unavailable. Please try again later.";
+    console.error("Manual Summary error:", error);
+    return "Summary generation failed. Please try again later.";
   }
 };

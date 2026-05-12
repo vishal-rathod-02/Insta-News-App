@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import { summarizeArticleWithGemini } from "../services/aiModal.js";
 import rateLimit from "express-rate-limit";
 
+import Summary from "../models/Summary.js";
+
 const router = express.Router();
 
 const summaryLimiter = rateLimit({
@@ -10,9 +12,6 @@ const summaryLimiter = rateLimit({
 });
 
 router.use(summaryLimiter);
-
-// In-memory summary cache
-const summaryCache = new Map<string, string>();
 
 router.post("/", async (req: Request, res: Response) => {
   try {
@@ -42,17 +41,30 @@ router.post("/", async (req: Request, res: Response) => {
     // Cache key
     const cacheKey = `${title.trim().toLowerCase()}-${mode}-${language}`;
 
-    if (summaryCache.has(cacheKey)) {
+    // Check persistent DB cache first
+    const existingSummary = await Summary.findOne({ cacheKey });
+
+    if (existingSummary) {
       return res.status(200).json({
         success: true,
-        data: summaryCache.get(cacheKey),
+        data: existingSummary.summaryText,
         cached: true
       });
     }
 
+    // Generate new summary via AI
     const summary = await summarizeArticleWithGemini(title, content, mode, language);
 
-    summaryCache.set(cacheKey, summary);
+    // Save to persistent DB cache
+    if (!summary.includes("currently unavailable") && !summary.includes("Not enough content")) {
+      await Summary.create({
+        cacheKey,
+        articleTitle: title,
+        mode,
+        language,
+        summaryText: summary
+      });
+    }
 
     res.status(200).json({
       success: true,
