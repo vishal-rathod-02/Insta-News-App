@@ -1,17 +1,40 @@
 import React, { useState } from "react";
 import type { NewsCardProps } from "../utils/types";
 import FallbackImage from '../assets/News_Placeholder.webp';
-import { ExternalLink, Sparkles, Bookmark } from 'lucide-react';
+import { ExternalLink, Sparkles, Bookmark, Share2, Check } from 'lucide-react';
 import { useUser as useLocalUser } from '../context/UserContext';
 import { useUser as useClerkUser, useClerk } from '@clerk/clerk-react';
+import { Link } from 'react-router-dom';
 
 const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = false }) => {
   const [loading, setLoading] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const { isSaved, saveArticle, removeSavedArticle, addToHistory } = useLocalUser();
   const { user } = useClerkUser();
   const clerk = useClerk();
 
   const saved = isSaved(article.id);
+
+  const handleShareNews = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: article.title,
+          text: article.contentSnippet || "Check out this news article!",
+          url: article.link,
+        });
+      } catch (err) {
+        console.error("Share failed", err);
+      }
+    } else {
+      await navigator.clipboard.writeText(article.link);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
 
   const handleSave = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -71,7 +94,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
       title={article.title}
     >
       {/* IMAGE */}
-      <a href={article.link} target="_blank" rel="noopener noreferrer" onClick={handleRead} className={`block ${isFeatured ? 'sm:w-1/2 lg:w-[55%] shrink-0 relative aspect-video sm:aspect-auto' : ''}`}>
+      <Link to="/article" state={{ article }} onClick={handleRead} className={`block ${isFeatured ? 'sm:w-1/2 lg:w-[55%] shrink-0 relative aspect-video sm:aspect-auto' : ''}`}>
         <div className={`relative overflow-hidden w-full h-full ${!isFeatured ? 'aspect-video' : 'absolute inset-0'}`}>
           <img
             src={article.imageUrl || defaultImage}
@@ -113,7 +136,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
             <Bookmark className={`w-4 h-4 ${saved ? 'fill-violet-500 text-violet-500' : 'text-white'}`} />
           </button>
         </div>
-      </a>
+      </Link>
 
       {/* CONTENT */}
       <div className={`flex flex-col grow min-w-0 p-5 ${isFeatured ? 'sm:p-8 lg:p-10 justify-center' : ''}`}>
@@ -128,10 +151,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
         </div>
 
         {/* TITLE */}
-        <a
-          href={article.link}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to="/article"
+          state={{ article }}
           onClick={handleRead}
           className="block"
         >
@@ -145,7 +167,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
           >
             {article.title}
           </h3>
-        </a>
+        </Link>
 
         {/* SNIPPET */}
         <p className={`mb-5 text-slate-600 dark:text-slate-300 leading-relaxed ${isFeatured ? 'text-base line-clamp-4 sm:line-clamp-5' : 'text-sm line-clamp-3'}`}>
@@ -154,10 +176,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
 
         {/* ACTIONS */}
         <div className="mt-auto pt-5 flex flex-wrap 2xl:flex-nowrap items-center gap-3 border-t border-slate-100 dark:border-slate-800/60 w-full">
-          <a
-            href={article.link}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/article"
+            state={{ article }}
             onClick={handleRead}
             className="flex-1 relative rounded-full p-[1.5px] bg-linear-to-r from-violet-600 to-fuchsia-500 overflow-hidden group/btn shadow-sm hover:shadow-violet-500/25 transition-all duration-300 active:scale-95"
           >
@@ -167,28 +188,47 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
               </span>
               <ExternalLink className="w-3.5 h-3.5 text-violet-600 dark:text-fuchsia-400 group-hover/btn:text-white transition-colors duration-300" />
             </div>
-          </a>
+          </Link>
 
-          <button
-            onClick={handleSummarize}
-            disabled={loading}
-            className={`
-              flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap
-              ${loading
-                ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
-                : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
-              }
-            `}
-          >
-            {loading ? (
-              <span className="animate-pulse">Loading...</span>
-            ) : (
-              <>
-                Summarize
-                <Sparkles className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
+          {isFeatured ? (
+            <button
+              onClick={handleSummarize}
+              disabled={loading}
+              className={`
+                flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap
+                ${loading
+                  ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
+                  : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
+                }
+              `}
+            >
+              {loading ? (
+                <span className="animate-pulse">Loading...</span>
+              ) : (
+                <>
+                  Summarize
+                  <Sparkles className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={handleShareNews}
+              className="flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap bg-slate-100/80 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-violet-600 dark:hover:text-fuchsia-400"
+            >
+              {copiedLink ? (
+                <>
+                  Copied!
+                  <Check className="w-3.5 h-3.5 text-green-500" />
+                </>
+              ) : (
+                <>
+                  Share
+                  <Share2 className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

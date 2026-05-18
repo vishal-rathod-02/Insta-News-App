@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNews } from '../hooks/useNews';
+import { Link } from 'react-router-dom';
 import DataFetchError from './shared/DataFetchError';
 
 interface LiveSidebarProps {
@@ -73,11 +74,11 @@ const LiveSidebar: React.FC<LiveSidebarProps> = ({ country }) => {
                     </span>
                   </div>
                   
-                  <a href={article.link} target="_blank" rel="noopener noreferrer" className="block">
+                  <Link to="/article" state={{ article }} className="block">
                     <h4 className="text-sm font-bold text-slate-800 dark:text-slate-300 leading-snug group-hover:text-slate-700 group-hover:underline dark:group-hover:text-slate-100 transition-colors line-clamp-3">
                       {article.title}
                     </h4>
-                  </a>
+                  </Link>
                   
                   {/* Expand first article slightly */}
                   {i === 0 && article.imageUrl && (

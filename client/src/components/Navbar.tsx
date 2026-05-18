@@ -258,7 +258,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="hidden lg:flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-4">
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="text-sm font-semibold text-slate-900 dark:text-slate-50 hover:text-violet-600 dark:hover:text-fuchsia-400 transition-colors">
+                  <button className="px-5 py-2 text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-all border border-slate-200 dark:border-slate-700 active:scale-95">
                     Sign In
                   </button>
                 </SignInButton>
@@ -289,8 +289,12 @@ const Navbar: React.FC<NavbarProps> = ({
                 </div>
                 <UserButton appearance={{ elements: { userButtonAvatarBox: "w-8 h-8 rounded-full border-2 border-violet-200 dark:border-violet-800 shadow-sm shadow-violet-500/20" } }} />
               </SignedIn>
-              <button className="px-4 py-2 text-sm font-bold text-white gradient-primary neon-glow rounded-full transition-transform active:scale-95 hover:opacity-90">
-                Subscribe
+              <button className="relative group overflow-hidden px-5 py-2 rounded-full font-bold text-white text-sm shadow-md transition-all active:scale-95 border border-white/20 hover:shadow-fuchsia-500/25">
+                <div className="absolute inset-0 bg-linear-to-r from-violet-600 to-fuchsia-600 transition-transform duration-500 group-hover:scale-110" />
+                <span className="relative flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Premium
+                </span>
               </button>
             </div>
 

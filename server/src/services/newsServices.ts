@@ -4,6 +4,7 @@ import { FEEDS, SUBCATEGORY_FEEDS } from "../config/feeds.js";
 import { extractImage, removeDuplicates } from "../utils/newsUtils.js";
 
 const parser = new Parser({
+  timeout: 5000,
   customFields: {
     item: [
       ["media:content", "media:content"],
@@ -16,6 +17,21 @@ const parser = new Parser({
     "Accept": "application/rss+xml, application/xml, text/xml, */*"
   }
 });
+
+const fetchWithTimeout = async (url: string, timeoutMs: number = 3000): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Timeout fetching ${url}`)), timeoutMs);
+    parser.parseURL(url)
+      .then(res => {
+        clearTimeout(timer);
+        resolve(res);
+      })
+      .catch(err => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+};
 
 // -----------------------------
 // In-Memory Cache
@@ -65,7 +81,7 @@ export const fetchNews = async (
   if (!feedUrls || feedUrls.length === 0) return [];
 
   const results = await Promise.allSettled(
-    feedUrls.map((url) => parser.parseURL(url)),
+    feedUrls.map((url) => fetchWithTimeout(url)),
   );
 
   let articles: Article[] = [];
@@ -74,7 +90,7 @@ export const fetchNews = async (
     if (result.status === "fulfilled") {
       const feed = result.value;
 
-      feed.items.forEach((item) => {
+      feed.items.forEach((item: any) => {
         articles.push({
           id: item.guid || item.link || Math.random().toString(),
           title: item.title ?? "",
@@ -136,7 +152,7 @@ export const fetchCarouselNews = async (
   const feedUrls = categories.flatMap((cat) => FEEDS[country][cat]);
 
   const results = await Promise.allSettled(
-    feedUrls.map((url) => parser.parseURL(url)),
+    feedUrls.map((url) => fetchWithTimeout(url)),
   );
 
   let articles: Article[] = [];
@@ -145,7 +161,7 @@ export const fetchCarouselNews = async (
     if (result.status === "fulfilled") {
       const feed = result.value;
 
-      feed.items.forEach((item) => {
+      feed.items.forEach((item: any) => {
         articles.push({
           id: item.guid || item.link || Math.random().toString(),
           title: item.title ?? "",

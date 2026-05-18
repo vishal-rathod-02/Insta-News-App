@@ -17,7 +17,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
           <span className="w-2 h-2 rounded-full gradient-primary neon-glow animate-pulse" />
           Trending Now
         </h3>
-        
+
         <div className="space-y-4">
           {error ? (
             <DataFetchError message={error} />
@@ -33,9 +33,10 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
             ))
           ) : (
             articles.slice(0, 6).map((article, i) => (
-              <Link 
+              <Link
                 key={article.id}
-                to="/category/top"
+                to="/article"
+                state={{ article }}
                 className="group flex gap-3 items-start"
               >
                 <span className="text-4xl font-black text-slate-300 dark:text-slate-700 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors leading-none tracking-tighter self-center w-8 text-center shrink-0">
@@ -55,16 +56,16 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
 
       <div className="glass-panel rounded-2xl p-6 mt-6 relative overflow-hidden group/explore">
         {/* Subtle background glow */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 blur-[40px] rounded-full pointer-events-none group-hover/explore:bg-violet-500/20 transition-colors duration-500" />
-        
+        <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 blur-2xl rounded-full pointer-events-none group-hover/explore:bg-violet-500/20 transition-colors duration-500" />
+
         <h3 className="font-bold text-slate-900 dark:text-slate-50 text-lg mb-4 relative z-10">
           Explore Topics
         </h3>
         <div className="flex flex-wrap gap-2 relative z-10">
           {["AI", "Startups", "Elections", "Climate", "Crypto", "Space", "HealthTech", "Markets"].map(
             (tag) => (
-              <button 
-                key={tag} 
+              <button
+                key={tag}
                 onClick={() => window.location.href = `/search?q=${encodeURIComponent(tag)}`}
                 className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg cursor-pointer hover:bg-violet-600 hover:text-white hover:border-violet-600 dark:hover:bg-violet-600 dark:hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-violet-500/25 hover:-translate-y-0.5 active:scale-95"
               >

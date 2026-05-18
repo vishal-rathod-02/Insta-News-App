@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { useCarousel } from "../hooks/useCarousel";
 import type { CarouselProps } from "../utils/types";
 import { ChevronLeftIcon, ChevronRightIcon } from "./shared/Icons";
@@ -152,15 +153,14 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
               </p>
 
               <div className="flex gap-4">
-                <a
-                  href={article.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  to="/article"
+                  state={{ article }}
                   title={article.title}
                   className="flex items-center gap-2 bg-white text-[#120C1F] hover:bg-slate-100 px-4 py-2 rounded-md font-bold text-sm shadow-xl transition-transform active:scale-95"
                 >
                   Read More
-                </a>
+                </Link>
 
                 <button
                   onClick={() => onSummarize(article)}

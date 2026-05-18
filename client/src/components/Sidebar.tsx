@@ -76,8 +76,13 @@ const Sidebar: React.FC<SidebarProps> = ({
               Sign in to sync your news
             </p>
             <SignInButton mode="modal">
-              <button className="mt-4 w-full py-2.5 gradient-primary text-white neon-glow font-semibold rounded-lg text-sm transition-transform active:scale-95">
-                Log In / Sign Up
+              <button className="mt-4 w-full relative overflow-hidden group py-3 px-4 rounded-xl font-bold text-white shadow-lg transition-all active:scale-95 border border-white/20 dark:border-white/10 hover:shadow-violet-500/30">
+                <div className="absolute inset-0 bg-linear-to-r from-violet-600 via-fuchsia-600 to-amber-500 transition-all duration-500 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-black/10 transition-opacity opacity-0 group-hover:opacity-100" />
+                <span className="relative flex items-center justify-center gap-2">
+                  <UserCircle className="w-5 h-5" />
+                  Sign In / Create Account
+                </span>
               </button>
             </SignInButton>
           </SignedOut>
@@ -127,8 +132,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                   Sign in to unlock Bookmarks, Reading History, and Personalized Feeds.
                 </p>
                 <SignInButton mode="modal">
-                  <button className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:underline">
-                    Log in now &rarr;
+                  <button className="w-full mt-2 py-2 px-4 rounded-lg bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 font-bold text-xs border border-violet-100 dark:border-violet-500/20 shadow-sm hover:shadow-md hover:border-violet-300 dark:hover:border-violet-500/50 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    Log In Now &rarr;
                   </button>
                 </SignInButton>
               </div>

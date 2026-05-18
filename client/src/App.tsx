@@ -6,6 +6,7 @@ import SearchPage from "./pages/SearchPage";
 import SavedPage from "./pages/SavedPage";
 import HistoryPage from "./pages/HistoryPage";
 import MyNewsPage from "./pages/MyNewsPage";
+import ArticlePage from "./pages/ArticlePage";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 const RouteNotFound = () => {
@@ -24,6 +25,7 @@ const App = () => {
             <Route path="saved" element={<SavedPage />} />
             <Route path="history" element={<HistoryPage />} />
             <Route path="my-news" element={<MyNewsPage />} />
+            <Route path="article" element={<ArticlePage />} />
             <Route path="*" element={<RouteNotFound />} />
           </Route>
         </Routes>

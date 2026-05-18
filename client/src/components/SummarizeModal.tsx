@@ -3,7 +3,7 @@ import type { SummarizeModalProps } from "../utils/types";
 import { XIcon, SparklesIcon } from "./shared/Icons";
 import { motion, AnimatePresence } from "framer-motion";
 
-const SummarizeModal: React.FC<SummarizeModalProps> = ({ article, onClose }) => {
+const SummarizeModal: React.FC<SummarizeModalProps> = ({ onClose }) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -59,27 +59,27 @@ const SummarizeModal: React.FC<SummarizeModalProps> = ({ article, onClose }) => 
               className="w-24 h-24 mb-6 rounded-full bg-linear-to-br from-violet-100 to-fuchsia-100 dark:from-violet-900/30 dark:to-fuchsia-900/30 flex items-center justify-center shadow-inner border border-violet-200/50 dark:border-violet-700/30 relative"
             >
               <SparklesIcon className="w-10 h-10 text-violet-500 dark:text-fuchsia-400 relative z-10" />
-              <motion.div 
+              <motion.div
                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute inset-0 bg-violet-400/20 dark:bg-fuchsia-400/20 rounded-full blur-xl"
               />
             </motion.div>
-            
+
             <h3 className="text-2xl font-bold mb-3 text-slate-800 dark:text-white">
               We're building something smarter!
             </h3>
-            
+
             <p className="text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed text-[15px]">
               The Summarize feature is currently taking a short break while we develop our own highly-advanced, custom AI agent specifically tailored for this app.
             </p>
-            
+
             <div className="mt-6 p-4 rounded-2xl bg-violet-50/50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-800/30">
               <p className="text-violet-600 dark:text-fuchsia-300 text-sm font-medium">
                 We're dropping the limitations to bring you instant, flawless insights. This feature will be back and better than ever very soon! 🚀
               </p>
             </div>
-            
+
             <button
               onClick={onClose}
               className="mt-8 px-8 py-3 w-full sm:w-auto rounded-full bg-linear-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-medium shadow-md shadow-violet-500/20 transition-all active:scale-95"

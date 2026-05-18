@@ -6,12 +6,14 @@ Insta-News delivers real-time news across multiple categories, tracks live sport
 
 ## 🌟 Key Features
 
-*   **Dynamic Personalized Feed:** Users can securely log in via Clerk to select their favorite topics (Tech, Sports, Health, etc.) and receive a tailored "My News" dashboard.
+*   **Dynamic Personalized Feed:** Users can securely log in via Clerk to select their favorite topics and receive a tailored "My News" dashboard.
+*   **Walled Garden Experience:** Internal `<Link>` routing system with a dedicated, distraction-free **Article Reading Page** keeps users engaged entirely within the application ecosystem.
 *   **AI Summarization:** Powered by Gemini AI to generate instant, intelligent summaries of long news articles directly in a beautiful modal.
-*   **Secure Authentication:** End-to-end authentication via Clerk, handling user sessions and Google OAuth securely.
+*   **Premium Weather Portal:** A completely bespoke, interactive 7-day weather dashboard featuring ambient animated glows, visual temperature bars, and React Portals for seamless screen overlay.
+*   **Secure Authentication:** End-to-end authentication via Clerk, featuring highly polished, modern login and sign-up CTAs.
 *   **Persistent Preferences:** User data, bookmarks, and reading history are securely stored in a MongoDB database.
 *   **Live Sports Integration:** Real-time cricket score tracking with intelligent status parsing.
-*   **Modern Premium UI:** Built with Tailwind CSS, featuring glassmorphism panels, neon glows, vibrant fuchsia/violet accents, and responsive animations.
+*   **Next-Gen UI/UX:** Built with Tailwind CSS, leveraging advanced glassmorphism (`backdrop-blur-2xl`), animated neon glows, vibrant fuchsia/violet accents, and buttery smooth Framer Motion transitions.
 *   **Dark/Light Mode:** Seamless theme toggling with persistent state.
 
 ## 🛠 Tech Stack
@@ -60,7 +62,6 @@ Insta-News delivers real-time news across multiple categories, tracks live sport
    Create `server/.env`:
    ```env
    PORT=3004
-   GEMINI_API_KEY=your_gemini_api_key
    MONGO_URI=your_mongodb_connection_string
    ```
 

@@ -46,12 +46,12 @@ const SearchPage: React.FC = () => {
               Search
             </span>
             <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-            <span className="text-indigo-600 dark:text-indigo-400 truncate max-w-[150px] sm:max-w-[300px]">
+            <span className="text-indigo-600 dark:text-indigo-400 truncate max-w-37.5 sm:max-w-75">
               "{query}"
             </span>
           </nav>
           
-          <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 p-[1.5px] mb-12 shadow-[0_20px_60px_-15px_rgba(139,92,246,0.3)]">
+          <div className="relative overflow-hidden rounded-4xl bg-linear-to-r from-indigo-500 via-purple-500 to-fuchsia-500 p-[1.5px] mb-12 shadow-[0_20px_60px_-15px_rgba(139,92,246,0.3)]">
             <div className="relative bg-white/95 dark:bg-[#0A0510]/95 backdrop-blur-3xl rounded-[30.5px] p-8 sm:p-12 overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-8 z-10 group">
               {/* Decorative background glows */}
               <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-fuchsia-500/20 blur-[80px] rounded-full pointer-events-none transition-transform duration-700 group-hover:scale-110" />

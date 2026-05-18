@@ -99,27 +99,6 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
 
             {/* Weather Widget */}
             <WeatherWidget variant="navtracker" />
-
-            {/* Audio Briefing Widget */}
-            <button className="w-full relative group/audio overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-800/40 p-4 border border-slate-200/80 dark:border-slate-700/50 hover:border-violet-500/50 dark:hover:border-fuchsia-400/50 transition-all duration-300 text-left hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-0.5">
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-violet-500/10 rounded-full blur-[20px] group-hover/audio:bg-fuchsia-500/20 transition-colors duration-500" />
-              <div className="relative z-10 flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-md shadow-violet-500/20 group-hover/audio:scale-110 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
-                  </div>
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">Audio Brief</h4>
-                </div>
-                <div className="flex gap-0.5 items-center opacity-50 group-hover/audio:opacity-100 transition-opacity h-3">
-                  <span className="w-0.5 h-1.5 bg-violet-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                  <span className="w-0.5 h-3 bg-fuchsia-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                  <span className="w-0.5 h-2 bg-violet-500 rounded-full animate-bounce"></span>
-                </div>
-              </div>
-              <p className="relative z-10 text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
-                Listen to a 3-minute AI summary of today's top stories.
-              </p>
-            </button>
           </div>
         </div>
       </aside>
