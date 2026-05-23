@@ -4,12 +4,12 @@ import { useCarousel } from "../hooks/useCarousel";
 import type { CarouselProps } from "../utils/types";
 import { ChevronLeftIcon, ChevronRightIcon } from "./shared/Icons";
 import DataFetchError from "./shared/DataFetchError";
-import FallbackImage from '../assets/News_Placeholder.webp';
+import FallbackImage from "../assets/News_Placeholder.webp";
 
 const AUTO_PLAY_DELAY = 6000;
 
 const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
-  const { articles, isLoading, error }  = useCarousel(country, 30);
+  const { articles, isLoading, error } = useCarousel(country, 30);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -26,10 +26,15 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
   useEffect(() => {
     if (dotsContainerRef.current) {
       const container = dotsContainerRef.current;
-      const activeDot = container.children[currentIndex] as HTMLElement | undefined;
+      const activeDot = container.children[currentIndex] as
+        | HTMLElement
+        | undefined;
       if (activeDot) {
-        const scrollTarget = activeDot.offsetLeft - container.clientWidth / 2 + activeDot.clientWidth / 2;
-        container.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+        const scrollTarget =
+          activeDot.offsetLeft -
+          container.clientWidth / 2 +
+          activeDot.clientWidth / 2;
+        container.scrollTo({ left: scrollTarget, behavior: "smooth" });
       }
     }
   }, [currentIndex]);
@@ -45,12 +50,12 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
   }, [articles.length]);
 
   /*  Auto play */
- useEffect(() => {
-  if (!isPaused && articles.length) {
-    const timer = setInterval(nextSlide, AUTO_PLAY_DELAY);
-    return () => clearInterval(timer);
-  }
-}, [articles.length, isPaused, nextSlide]);
+  useEffect(() => {
+    if (!isPaused && articles.length) {
+      const timer = setInterval(nextSlide, AUTO_PLAY_DELAY);
+      return () => clearInterval(timer);
+    }
+  }, [articles.length, isPaused, nextSlide]);
 
   /*  Keyboard navigation */
   useEffect(() => {
@@ -114,16 +119,16 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
                   : "opacity-0 scale-105"
               }
               `}
-              title={article.title}
-            >
-           <div className="absolute inset-0 overflow-hidden">
-                <img
-                  src={article.imageUrl ?? fallbackimg}
-                  alt={article.title}
-                  className={`w-full h-full will-change-transformtransition-transform duration-6000 ease-in 
+            title={article.title}
+          >
+            <div className="absolute inset-0 overflow-hidden">
+              <img
+                src={article.imageUrl ?? fallbackimg}
+                alt={article.title}
+                className={`w-full h-full will-change-transformtransition-transform duration-6000 ease-in 
                   `}
-                />
-              </div>
+              />
+            </div>
 
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
 
@@ -148,9 +153,7 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
                 {article.title}
               </h2>
 
-              <p className="text-sm opacity-80 mb-5">
-                {article.source}
-              </p>
+              <p className="text-sm opacity-80 mb-5">{article.source}</p>
 
               <div className="flex gap-4">
                 <Link
@@ -168,12 +171,13 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
                   className="relative group p-[1.5px] rounded-md overflow-hidden active:scale-95 transition-transform shadow-lg cursor-pointer flex items-center justify-center shrink-0"
                 >
                   {/* Continuous AI Spinning Glow */}
-                  <div 
-                    className="absolute w-[300%] h-[300%] animate-spin opacity-90" 
-                    style={{ 
-                       animationDuration: '4s',
-                       background: 'conic-gradient(from 0deg, transparent 0%, transparent 60%, #F59E0B 85%, #8B5CF6 100%)' 
-                    }} 
+                  <div
+                    className="absolute w-[300%] h-[300%] animate-spin opacity-90"
+                    style={{
+                      animationDuration: "4s",
+                      background:
+                        "conic-gradient(from 0deg, transparent 0%, transparent 60%, #F59E0B 85%, #8B5CF6 100%)",
+                    }}
                   />
                   {/* Premium Frosted Glass Core */}
                   <div className="relative flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/5 text-white hover:bg-black/60 transition-colors font-semibold rounded-[4.5px] text-sm w-full h-full z-10">
@@ -196,7 +200,7 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
       </CarouselButton>
 
       {/* DOT INDICATORS */}
-      <div 
+      <div
         ref={dotsContainerRef}
         className="absolute bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-oled-surface/60 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(2,1,10,0.6)] rounded-full z-20 max-w-[65vw] sm:max-w-[40vw] overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth"
       >
@@ -208,9 +212,10 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
               onClick={() => setCurrentIndex(i)}
               aria-label={`Go to slide ${i + 1}`}
               className={` relative h-1.5 sm:h-2 shrink-0 rounded-full overflow-hidden transition-all duration-300 ease-out
-                ${isActive
-                  ? "w-6 sm:w-10 bg-white/20"
-                  : "w-1.5 sm:w-2 bg-white/30 hover:bg-white/60"
+                ${
+                  isActive
+                    ? "w-6 sm:w-10 bg-white/20"
+                    : "w-1.5 sm:w-2 bg-white/30 hover:bg-white/60"
                 }
               `}
             >
