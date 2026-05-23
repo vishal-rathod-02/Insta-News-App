@@ -14,12 +14,13 @@ import { Home, ChevronRight } from "lucide-react";
 const CategoryPage: React.FC = () => {
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  const { country, onSummarize, setActiveCategory } = useOutletContext<LayoutContextType>();
+  const { country, onSummarize, setActiveCategory } =
+    useOutletContext<LayoutContextType>();
 
   const [worldRegion, setWorldRegion] = useState("US"); // Default world perspective to US
   const [activeSubCategory, setActiveSubCategory] = useState<string>("all");
 
-  const category = CATEGORIES.find(c => c.id === categoryId);
+  const category = CATEGORIES.find((c) => c.id === categoryId);
 
   useEffect(() => {
     if (category) {
@@ -42,7 +43,12 @@ const CategoryPage: React.FC = () => {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl font-bold mb-4">Category not found</h2>
-        <button onClick={() => navigate('/')} className="text-violet-600 underline">Return Home</button>
+        <button
+          onClick={() => navigate("/")}
+          className="text-violet-600 underline"
+        >
+          Return Home
+        </button>
       </div>
     );
   }
@@ -56,21 +62,30 @@ const CategoryPage: React.FC = () => {
         <div className="mb-8">
           <nav className="flex items-center gap-2 text-xs sm:text-sm font-bold mb-6 text-slate-500 dark:text-slate-400">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate("/")}
               className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors flex items-center gap-1.5 group"
             >
               <Home className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
               Home
             </button>
             <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-            <span className={`transition-colors ${activeSubCategory === "all" ? "text-slate-800 dark:text-slate-200" : "cursor-pointer hover:text-violet-600 dark:hover:text-violet-400"}`} onClick={() => activeSubCategory !== "all" && setActiveSubCategory("all")}>
+            <span
+              className={`transition-colors ${activeSubCategory === "all" ? "text-slate-800 dark:text-slate-200" : "cursor-pointer hover:text-violet-600 dark:hover:text-violet-400"}`}
+              onClick={() =>
+                activeSubCategory !== "all" && setActiveSubCategory("all")
+              }
+            >
               {category.title}
             </span>
             {activeSubCategory !== "all" && (
               <>
                 <ChevronRight className="w-3.5 h-3.5 opacity-50" />
                 <span className="text-violet-600 dark:text-violet-400">
-                  {category.subcategories?.find(s => s.id === activeSubCategory)?.title}
+                  {
+                    category.subcategories?.find(
+                      (s) => s.id === activeSubCategory,
+                    )?.title
+                  }
                 </span>
               </>
             )}
