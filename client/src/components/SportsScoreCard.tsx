@@ -76,8 +76,8 @@ const SportsScoreCard: React.FC = () => {
                 key={sport}
                 onClick={() => setActiveTab(sport)}
                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold capitalize transition-all duration-300 ${activeTab === sport
-                    ? "bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50"
-                    : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent"
+                  ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
                   }`}
               >
                 {sport === "cricket" ? (
@@ -147,12 +147,10 @@ const SportsScoreCard: React.FC = () => {
                   )}
 
                   <div className="flex justify-between items-center mb-5">
-                    <span
-                      className={`text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md ${match.isLive
-                          ? "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-500/20"
-                          : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
-                        }`}
-                    >
+                    <span className={`text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md ${match.isLive
+                      ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-500/20'
+                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
+                      }`}>
                       {match.time}
                     </span>
                     {match.isLive && (

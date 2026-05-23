@@ -217,9 +217,10 @@ const NewsCard: React.FC<NewsCardProps> = ({
               disabled={loading}
               className={`
                 flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap
-                ${loading
-                  ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
-                  : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
+                ${
+                  loading
+                    ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
+                    : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
                 }
               `}
             >

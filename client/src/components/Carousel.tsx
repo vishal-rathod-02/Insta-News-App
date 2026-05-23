@@ -211,9 +211,10 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
               onClick={() => setCurrentIndex(i)}
               aria-label={`Go to slide ${i + 1}`}
               className={` relative h-1.5 sm:h-2 shrink-0 rounded-full overflow-hidden transition-all duration-300 ease-out
-                ${isActive
-                  ? "w-6 sm:w-10 bg-white/20"
-                  : "w-1.5 sm:w-2 bg-white/30 hover:bg-white/60"
+                ${
+                  isActive
+                    ? "w-6 sm:w-10 bg-white/20"
+                    : "w-1.5 sm:w-2 bg-white/30 hover:bg-white/60"
                 }
               `}
             >

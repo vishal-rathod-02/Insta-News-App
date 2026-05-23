@@ -173,7 +173,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   onClose();
                 }}
                 className={`flex flex-col items-center justify-center gap-2 px-2 py-4 rounded-2xl text-xs font-semibold transition-all border
-                ${location.pathname === "/"
+                ${location.pathname === '/'
                     ? "gradient-primary neon-glow text-white border-transparent shadow-lg shadow-violet-500/25"
                     : "glass-panel text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-fuchsia-400 hover:-translate-y-0.5 hover:shadow-md"
                   }`}
