@@ -1,23 +1,24 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  BookmarkIcon,
-  HistoryIcon,
-  SettingsIcon,
-  XIcon
-} from "./shared/Icons";
+import { BookmarkIcon, HistoryIcon, SettingsIcon, XIcon } from "./shared/Icons";
 import { CATEGORIES } from "../utils/Categories";
 import { CATEGORY_ICONS } from "../utils/CategoryIcons";
 import { Compass, UserCircle } from "lucide-react";
 import type { SidebarProps } from "../utils/types";
 import WeatherWidget from "./WeatherWidget";
 import { useUser as useLocalUser } from "../context/UserContext";
-import { SignedIn, SignedOut, SignInButton, useUser, useClerk } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  useUser,
+  useClerk,
+} from "@clerk/clerk-react";
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
-  activeCategory
+  activeCategory,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,7 +45,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* HEADER */}
         <div className="p-6 bg-slate-50 dark:bg-oled-black border-b border-violet-50 dark:border-oled-border">
           <div className="flex justify-between items-start mb-4">
-            <img src="/logo.svg" alt="Insta-News" className="w-12 h-12 rounded-2xl shadow-xl shadow-fuchsia-500/20" />
+            <img
+              src="/logo.svg"
+              alt="Insta-News"
+              className="w-12 h-12 rounded-2xl shadow-xl shadow-fuchsia-500/20"
+            />
             <button
               onClick={onClose}
               className="p-2 bg-white dark:bg-oled-border rounded-full shadow-sm"
@@ -60,8 +65,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {user?.primaryEmailAddress?.emailAddress}
             </p>
-            <button 
-              onClick={() => { navigate('/my-news'); onClose(); }}
+            <button
+              onClick={() => {
+                navigate("/my-news");
+                onClose();
+              }}
               className="mt-4 w-full py-2.5 gradient-primary text-white neon-glow font-semibold rounded-lg text-sm transition-transform active:scale-95"
             >
               Go to My News Feed
@@ -90,7 +98,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* CONTENT */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-
           {/* Weather Widget */}
           <WeatherWidget variant="sidebar" />
 
@@ -100,36 +107,49 @@ const Sidebar: React.FC<SidebarProps> = ({
               My News
             </p>
             <SignedIn>
-              <SidebarLink 
-                icon={<BookmarkIcon />} 
-                label="Saved Articles" 
-                count={savedArticles.length} 
-                onClick={() => { navigate('/saved'); onClose(); }}
-                isActive={location.pathname === '/saved'}
+              <SidebarLink
+                icon={<BookmarkIcon />}
+                label="Saved Articles"
+                count={savedArticles.length}
+                onClick={() => {
+                  navigate("/saved");
+                  onClose();
+                }}
+                isActive={location.pathname === "/saved"}
               />
-              <SidebarLink 
-                icon={<HistoryIcon />} 
-                label="Reading History" 
-                count={readingHistory.length} 
-                onClick={() => { navigate('/history'); onClose(); }}
-                isActive={location.pathname === '/history'}
+              <SidebarLink
+                icon={<HistoryIcon />}
+                label="Reading History"
+                count={readingHistory.length}
+                onClick={() => {
+                  navigate("/history");
+                  onClose();
+                }}
+                isActive={location.pathname === "/history"}
               />
-              <SidebarLink 
-                icon={<SettingsIcon />} 
-                label="Preferences" 
-                onClick={() => { navigate('/my-news'); onClose(); }}
-                isActive={location.pathname === '/my-news'}
+              <SidebarLink
+                icon={<SettingsIcon />}
+                label="Preferences"
+                onClick={() => {
+                  navigate("/my-news");
+                  onClose();
+                }}
+                isActive={location.pathname === "/my-news"}
               />
-              <SidebarLink 
-                icon={<UserCircle className="w-5 h-5 text-inherit" />} 
-                label="Manage Account" 
-                onClick={() => { clerk.openUserProfile(); onClose(); }}
+              <SidebarLink
+                icon={<UserCircle className="w-5 h-5 text-inherit" />}
+                label="Manage Account"
+                onClick={() => {
+                  clerk.openUserProfile();
+                  onClose();
+                }}
               />
             </SignedIn>
             <SignedOut>
               <div className="px-3 py-4 text-center rounded-xl bg-violet-50/50 dark:bg-violet-500/5 border border-violet-100 dark:border-violet-500/10">
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                  Sign in to unlock Bookmarks, Reading History, and Personalized Feeds.
+                  Sign in to unlock Bookmarks, Reading History, and Personalized
+                  Feeds.
                 </p>
                 <SignInButton mode="modal">
                   <button className="w-full mt-2 py-2 px-4 rounded-lg bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 font-bold text-xs border border-violet-100 dark:border-violet-500/20 shadow-sm hover:shadow-md hover:border-violet-300 dark:hover:border-violet-500/50 transition-all active:scale-95 flex items-center justify-center gap-2">
@@ -149,21 +169,24 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => {
-                  navigate('/');
+                  navigate("/");
                   onClose();
                 }}
                 className={`flex flex-col items-center justify-center gap-2 px-2 py-4 rounded-2xl text-xs font-semibold transition-all border
-                ${location.pathname === '/'
+                ${location.pathname === "/"
                     ? "gradient-primary neon-glow text-white border-transparent shadow-lg shadow-violet-500/25"
                     : "glass-panel text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-fuchsia-400 hover:-translate-y-0.5 hover:shadow-md"
                   }`}
               >
-                <Compass className={`w-6 h-6 ${location.pathname === '/' ? '' : 'text-slate-400 dark:text-slate-500'}`} />
+                <Compass
+                  className={`w-6 h-6 ${location.pathname === "/" ? "" : "text-slate-400 dark:text-slate-500"}`}
+                />
                 Discover
               </button>
 
               {CATEGORIES.map((cat) => {
-                const isActive = activeCategory === cat.id && location.pathname !== '/';
+                const isActive =
+                  activeCategory === cat.id && location.pathname !== "/";
                 return (
                   <button
                     key={cat.id}
@@ -177,9 +200,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                         : "glass-panel text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-fuchsia-400 hover:-translate-y-0.5 hover:shadow-md"
                       }`}
                   >
-                    {React.cloneElement(CATEGORY_ICONS[cat.id] as React.ReactElement<any>, { 
-                      className: `w-6 h-6 ${isActive ? '' : 'text-slate-400 dark:text-slate-500'}` 
-                    })}
+                    {React.cloneElement(
+                      CATEGORY_ICONS[cat.id] as React.ReactElement<any>,
+                      {
+                        className: `w-6 h-6 ${isActive ? "" : "text-slate-400 dark:text-slate-500"}`,
+                      },
+                    )}
                     {cat.title}
                   </button>
                 );
@@ -190,9 +216,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* FOOTER */}
         <div className="p-4 border-t border-violet-50 dark:border-oled-border text-center">
-          <p className="text-xs text-violet-500">
-            Version 1.0.0 • InstaNews
-          </p>
+          <p className="text-xs text-violet-500">Version 1.0.0 • InstaNews</p>
         </div>
       </aside>
     </>
@@ -204,7 +228,7 @@ const SidebarLink = ({
   label,
   count,
   onClick,
-  isActive
+  isActive,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -212,20 +236,25 @@ const SidebarLink = ({
   onClick?: () => void;
   isActive?: boolean;
 }) => (
-  <button 
+  <button
     onClick={onClick}
-    className={`flex items-center justify-between w-full px-3 py-3 rounded-xl transition-all duration-300 group ${
-      isActive 
+    className={`flex items-center justify-between w-full px-3 py-3 rounded-xl transition-all duration-300 group ${isActive
         ? "gradient-primary neon-glow text-white shadow-lg shadow-violet-500/25 scale-[1.02]"
         : "text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:-translate-y-0.5"
-    }`}
+      }`}
   >
     <div className="flex items-center gap-3">
-      <span className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110 text-violet-500'}`}>{icon}</span>
+      <span
+        className={`transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110 text-violet-500"}`}
+      >
+        {icon}
+      </span>
       <span className="text-sm font-bold tracking-wide">{label}</span>
     </div>
     {count !== undefined && count > 0 && (
-      <span className={`px-2 py-0.5 text-[10px] font-black rounded-full shadow-sm ${isActive ? 'bg-white text-violet-600' : 'bg-violet-500 text-white'}`}>
+      <span
+        className={`px-2 py-0.5 text-[10px] font-black rounded-full shadow-sm ${isActive ? "bg-white text-violet-600" : "bg-violet-500 text-white"}`}
+      >
         {count}
       </span>
     )}

@@ -1,26 +1,29 @@
-import React, { useEffect, useRef } from 'react';
-import { CATEGORIES } from '../utils/Categories';
-import { CATEGORY_ICONS } from '../utils/CategoryIcons';
-import { ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import WeatherWidget from './WeatherWidget';
+import React, { useEffect, useRef } from "react";
+import { CATEGORIES } from "../utils/Categories";
+import { CATEGORY_ICONS } from "../utils/CategoryIcons";
+import { ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import WeatherWidget from "./WeatherWidget";
 
 interface VerticalNavTrackerProps {
   activeCategory: string;
 }
 
-const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory }) => {
+const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({
+  activeCategory,
+}) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll mobile nav to keep active item in view
   useEffect(() => {
     if (scrollContainerRef.current) {
-      const activeElement = scrollContainerRef.current.querySelector(`[data-active="true"]`);
+      const activeElement =
+        scrollContainerRef.current.querySelector(`[data-active="true"]`);
       if (activeElement) {
         activeElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center',
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
         });
       }
     }
@@ -30,11 +33,11 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
     const section = document.getElementById(id);
     if (section) {
       const top = section.getBoundingClientRect().top + window.scrollY - 100;
-      window.scrollTo({ top, behavior: 'smooth' });
+      window.scrollTo({ top, behavior: "smooth" });
     }
   };
 
-  const navCategories = CATEGORIES.filter((c) => c.id !== 'top');
+  const navCategories = CATEGORIES.filter((c) => c.id !== "top");
 
   return (
     <>
@@ -57,7 +60,7 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
                   key={cat.id}
                   onClick={() => handleScrollTo(cat.id)}
                   className={`group relative flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 text-left active:scale-95
-                    ${isActive ? 'text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}
+                    ${isActive ? "text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"}
                   `}
                 >
                   {/* Premium Active Pill */}
@@ -65,24 +68,38 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
                     <motion.div
                       layoutId="desktop-pill"
                       className="absolute inset-0 bg-linear-to-r from-violet-600 to-fuchsia-600 rounded-2xl z-0"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
                     />
                   )}
 
                   <div className="relative z-10 flex items-center gap-3 w-full">
-                    <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
-                      {React.cloneElement(CATEGORY_ICONS[cat.id] as React.ReactElement<any>, {
-                        size: 18,
-                        strokeWidth: isActive ? 2.5 : 2
-                      })}
+                    <div
+                      className={`transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                    >
+                      {React.cloneElement(
+                        CATEGORY_ICONS[cat.id] as React.ReactElement<any>,
+                        {
+                          size: 18,
+                          strokeWidth: isActive ? 2.5 : 2,
+                        },
+                      )}
                     </div>
-                    <span className={`text-sm font-bold tracking-tight transition-colors ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`}>
+                    <span
+                      className={`text-sm font-bold tracking-tight transition-colors ${isActive ? "opacity-100" : "opacity-70 group-hover:opacity-100"}`}
+                    >
                       {cat.title}
                     </span>
 
                     {isActive && (
                       <motion.div layoutId="arrow" className="ml-auto">
-                        <ChevronRight size={14} className="text-white opacity-80" />
+                        <ChevronRight
+                          size={14}
+                          className="text-white opacity-80"
+                        />
                       </motion.div>
                     )}
                   </div>
@@ -129,7 +146,7 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
                   onClick={() => handleScrollTo(cat.id)}
                   layout
                   className={`relative flex items-center justify-center shrink-0 h-11
-                  ${isActive ? 'text-white px-5' : 'text-slate-500 dark:text-slate-400 w-11 rounded-full hover:bg-slate-100 dark:hover:bg-oled-border transition-colors'}
+                  ${isActive ? "text-white px-5" : "text-slate-500 dark:text-slate-400 w-11 rounded-full hover:bg-slate-100 dark:hover:bg-oled-border transition-colors"}
                 `}
                 >
                   {/* Fluid Background Pill (Dynamic Island Transition) */}
@@ -137,16 +154,29 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
                     <motion.div
                       layoutId="mobile-active-bg"
                       className="absolute inset-0 gradient-primary neon-glow rounded-full"
-                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 35,
+                      }}
                     />
                   )}
 
-                  <motion.div layout className="relative z-10 flex items-center">
-                    <motion.div layout className="flex items-center justify-center">
-                      {React.cloneElement(CATEGORY_ICONS[cat.id] as React.ReactElement<any>, {
-                        size: isActive ? 18 : 20,
-                        strokeWidth: isActive ? 2.5 : 1.5,
-                      })}
+                  <motion.div
+                    layout
+                    className="relative z-10 flex items-center"
+                  >
+                    <motion.div
+                      layout
+                      className="flex items-center justify-center"
+                    >
+                      {React.cloneElement(
+                        CATEGORY_ICONS[cat.id] as React.ReactElement<any>,
+                        {
+                          size: isActive ? 18 : 20,
+                          strokeWidth: isActive ? 2.5 : 1.5,
+                        },
+                      )}
                     </motion.div>
 
                     <AnimatePresence mode="popLayout">
@@ -156,7 +186,11 @@ const VerticalNavTracker: React.FC<VerticalNavTrackerProps> = ({ activeCategory 
                           initial={{ opacity: 0, scale: 0.8, x: -5 }}
                           animate={{ opacity: 1, scale: 1, x: 0 }}
                           exit={{ opacity: 0, scale: 0.8, x: -5 }}
-                          transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 35,
+                          }}
                           className="ml-2 overflow-hidden"
                         >
                           <span className="text-xs font-black whitespace-nowrap tracking-tight">
