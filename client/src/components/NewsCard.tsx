@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import type { NewsCardProps } from "../utils/types";
-import FallbackImage from '../assets/News_Placeholder.webp';
-import { ExternalLink, Sparkles, Bookmark, Share2, Check } from 'lucide-react';
-import { useUser as useLocalUser } from '../context/UserContext';
-import { useUser as useClerkUser, useClerk } from '@clerk/clerk-react';
-import { Link } from 'react-router-dom';
+import FallbackImage from "../assets/News_Placeholder.webp";
+import { ExternalLink, Sparkles, Bookmark, Share2, Check } from "lucide-react";
+import { useUser as useLocalUser } from "../context/UserContext";
+import { useUser as useClerkUser, useClerk } from "@clerk/clerk-react";
+import { Link } from "react-router-dom";
 
-const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = false }) => {
+const NewsCard: React.FC<NewsCardProps> = ({
+  article,
+  onSummarize,
+  isFeatured = false,
+}) => {
   const [loading, setLoading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const { isSaved, saveArticle, removeSavedArticle, addToHistory } = useLocalUser();
+  const { isSaved, saveArticle, removeSavedArticle, addToHistory } =
+    useLocalUser();
   const { user } = useClerkUser();
   const clerk = useClerk();
 
@@ -18,7 +23,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
   const handleShareNews = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -89,13 +94,20 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
         glass-panel
         shadow-sm hover:shadow-2xl hover:shadow-violet-500/20 dark:hover:shadow-[0_0_20px_rgba(167,139,250,0.3)]
         transition-all duration-500 hover:-translate-y-1
-        ${isFeatured ? 'flex-col sm:flex-row' : 'flex-col'}
+        ${isFeatured ? "flex-col sm:flex-row" : "flex-col"}
       `}
       title={article.title}
     >
       {/* IMAGE */}
-      <Link to="/article" state={{ article }} onClick={handleRead} className={`block ${isFeatured ? 'sm:w-1/2 lg:w-[55%] shrink-0 relative aspect-video sm:aspect-auto' : ''}`}>
-        <div className={`relative overflow-hidden w-full h-full ${!isFeatured ? 'aspect-video' : 'absolute inset-0'}`}>
+      <Link
+        to="/article"
+        state={{ article }}
+        onClick={handleRead}
+        className={`block ${isFeatured ? "sm:w-1/2 lg:w-[55%] shrink-0 relative aspect-video sm:aspect-auto" : ""}`}
+      >
+        <div
+          className={`relative overflow-hidden w-full h-full ${!isFeatured ? "aspect-video" : "absolute inset-0"}`}
+        >
           <img
             src={article.imageUrl || defaultImage}
             alt={article.title}
@@ -133,16 +145,23 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
             onClick={handleSave}
             className="absolute top-2 right-2 p-2 rounded-full bg-black/40 backdrop-blur-md text-white border border-white/10 shadow-md hover:bg-black/60 transition-colors z-10"
           >
-            <Bookmark className={`w-4 h-4 ${saved ? 'fill-violet-500 text-violet-500' : 'text-white'}`} />
+            <Bookmark
+              className={`w-4 h-4 ${saved ? "fill-violet-500 text-violet-500" : "text-white"}`}
+            />
           </button>
         </div>
       </Link>
 
       {/* CONTENT */}
-      <div className={`flex flex-col grow min-w-0 p-5 ${isFeatured ? 'sm:p-8 lg:p-10 justify-center' : ''}`}>
+      <div
+        className={`flex flex-col grow min-w-0 p-5 ${isFeatured ? "sm:p-8 lg:p-10 justify-center" : ""}`}
+      >
         {/* META */}
         <div className="flex items-center justify-between text-xs mb-3 gap-2">
-          <span title={article.source} className={`font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider truncate max-w-[70%] shrink-0 ${isFeatured ? 'text-xs' : 'text-[10px]'}`}>
+          <span
+            title={article.source}
+            className={`font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider truncate max-w-[70%] shrink-0 ${isFeatured ? "text-xs" : "text-[10px]"}`}
+          >
             {article.source}
           </span>
           <span className="text-slate-500 dark:text-slate-400 font-medium tracking-wide">
@@ -162,7 +181,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
               mb-3 font-bold leading-tight tracking-tight
               text-slate-900 dark:text-slate-300
               group-hover:underline dark:group-hover:text-slate-100 transition-colors
-              ${isFeatured ? 'text-xl sm:text-2xl lg:text-3xl line-clamp-4' : 'text-lg lg:text-xl line-clamp-3'}
+              ${isFeatured ? "text-xl sm:text-2xl lg:text-3xl line-clamp-4" : "text-lg lg:text-xl line-clamp-3"}
             `}
           >
             {article.title}
@@ -170,7 +189,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
         </Link>
 
         {/* SNIPPET */}
-        <p className={`mb-5 text-slate-600 dark:text-slate-300 leading-relaxed ${isFeatured ? 'text-base line-clamp-4 sm:line-clamp-5' : 'text-sm line-clamp-3'}`}>
+        <p
+          className={`mb-5 text-slate-600 dark:text-slate-300 leading-relaxed ${isFeatured ? "text-base line-clamp-4 sm:line-clamp-5" : "text-sm line-clamp-3"}`}
+        >
           {article.contentSnippet}
         </p>
 
@@ -196,9 +217,10 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, onSummarize, isFeatured = 
               disabled={loading}
               className={`
                 flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap
-                ${loading
-                  ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
-                  : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
+                ${
+                  loading
+                    ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
+                    : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
                 }
               `}
             >
