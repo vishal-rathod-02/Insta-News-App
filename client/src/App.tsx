@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
-import HomePage from "./pages/HomePage";
+import HomePage from "./features/home/HomePageView";
 import CategoryPage from "./pages/CategoryPage";
 import SearchPage from "./pages/SearchPage";
 import SavedPage from "./pages/SavedPage";
 import HistoryPage from "./pages/HistoryPage";
-import MyNewsPage from "./pages/MyNewsPage";
-import ArticlePage from "./pages/ArticlePage";
+import MyNewsPage from "./features/dashboard/DashboardPageView";
+import ArticlePage from "./features/article-details/ArticleDetailsPageView";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 const RouteNotFound = () => {
