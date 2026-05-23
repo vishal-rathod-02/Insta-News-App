@@ -1,14 +1,14 @@
-import React from 'react';
-import { useNews } from '../hooks/useNews';
-import { Link } from 'react-router-dom';
-import DataFetchError from './shared/DataFetchError';
+import React from "react";
+import { useNews } from "../hooks/useNews";
+import { Link } from "react-router-dom";
+import DataFetchError from "./shared/DataFetchError";
 
 interface RightSidebarProps {
   country: string;
 }
 
 const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
-  const { articles, isLoading, error } = useNews(country, 'top');
+  const { articles, isLoading, error } = useNews(country, "top");
 
   return (
     <aside className="hidden lg:block w-75 shrink-0 sticky top-32 self-start h-[calc(100vh-128px)] overflow-y-auto custom-scrollbar pr-2 space-y-6">
@@ -46,7 +46,9 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
                   <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 leading-tight  group-hover:text-shadow-slate-900 group-hover:underline dark:group-hover:text-slate-50 transition-colors line-clamp-2">
                     {article.title}
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{article.source}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {article.source}
+                  </p>
                 </div>
               </Link>
             ))
@@ -62,18 +64,29 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
           Explore Topics
         </h3>
         <div className="flex flex-wrap gap-2 relative z-10">
-          {["AI", "Startups", "Elections", "Climate", "Crypto", "Space", "HealthTech", "Markets"].map(
-            (tag) => (
-              <button
-                key={tag}
-                onClick={() => window.location.href = `/search?q=${encodeURIComponent(tag)}`}
-                className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg cursor-pointer hover:bg-violet-600 hover:text-white hover:border-violet-600 dark:hover:bg-violet-600 dark:hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-violet-500/25 hover:-translate-y-0.5 active:scale-95"
-              >
-                <span className="text-violet-500 dark:text-fuchsia-400 group-hover:text-white transition-colors">#</span>
-                {tag}
-              </button>
-            )
-          )}
+          {[
+            "AI",
+            "Startups",
+            "Elections",
+            "Climate",
+            "Crypto",
+            "Space",
+            "HealthTech",
+            "Markets",
+          ].map((tag) => (
+            <button
+              key={tag}
+              onClick={() =>
+                (window.location.href = `/search?q=${encodeURIComponent(tag)}`)
+              }
+              className="group flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-lg cursor-pointer hover:bg-violet-600 hover:text-white hover:border-violet-600 dark:hover:bg-violet-600 dark:hover:text-white transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-violet-500/25 hover:-translate-y-0.5 active:scale-95"
+            >
+              <span className="text-violet-500 dark:text-fuchsia-400 group-hover:text-white transition-colors">
+                #
+              </span>
+              {tag}
+            </button>
+          ))}
         </div>
       </div>
     </aside>
