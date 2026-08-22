@@ -1,4 +1,5 @@
 import type { NewsArticle } from "../utils/types";
+import { getApiUrl } from "../utils/apiConfig";
 
 export const getNewsForCategory = async (
   country: string,
@@ -31,10 +32,8 @@ export const getNewsForCategory = async (
     params.append("trending", "true");
   }
 
-  // console.log("Calling API:", `/api/news/${country}/${category}?${params.toString()}`);
-
   const response = await fetch(
-    `/api/news/${country}/${category}?${params.toString()}`
+    getApiUrl(`/api/news/${country}/${category}?${params.toString()}`)
   );
 
   if (!response.ok) {

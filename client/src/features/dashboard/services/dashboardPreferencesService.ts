@@ -1,3 +1,5 @@
+import { getApiUrl } from "../../../utils/apiConfig";
+
 interface DashboardPreferencesResponse {
   success: boolean;
   data?: {
@@ -6,7 +8,7 @@ interface DashboardPreferencesResponse {
 }
 
 export const fetchDashboardPreferences = async (userId: string) => {
-  const response = await fetch(`/api/preferences/${userId}`);
+  const response = await fetch(getApiUrl(`/api/preferences/${userId}`));
 
   if (!response.ok) {
     throw new Error("Failed to fetch dashboard preferences.");
@@ -20,7 +22,7 @@ export const saveDashboardPreferences = async (
   userId: string,
   categories: string[],
 ) => {
-  const response = await fetch(`/api/preferences/${userId}/categories`, {
+  const response = await fetch(getApiUrl(`/api/preferences/${userId}/categories`), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ categories }),

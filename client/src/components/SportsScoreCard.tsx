@@ -10,6 +10,8 @@ import {
   Flame
 } from "lucide-react";
 
+import { getApiUrl } from "../utils/apiConfig";
+
 type Sport = "cricket" | "football" | "basketball";
 
 interface LiveMatchItem {
@@ -58,7 +60,7 @@ const SportsScoreCard: React.FC = () => {
   useEffect(() => {
     const fetchLiveScores = async () => {
       try {
-        const response = await fetch("/api/sports/live");
+        const response = await fetch(getApiUrl("/api/sports/live"));
         const result = await response.json();
         if (result.success && result.data) {
           setMatchesData(result.data);
@@ -94,8 +96,8 @@ const SportsScoreCard: React.FC = () => {
                 key={sport}
                 onClick={() => setActiveTab(sport)}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition-all duration-300 ${activeTab === sport
-                    ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50 scale-105'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
+                  ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50 scale-105'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
                   }`}
               >
                 {sport === "cricket" && <Trophy className="w-3.5 h-3.5 text-amber-500" />}
@@ -153,7 +155,7 @@ const SportsScoreCard: React.FC = () => {
                     delay: idx * 0.05,
                     ease: "easeOut",
                   }}
-                  className="min-w-70 sm:min-w-[330px] snap-center shrink-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200 dark:border-oled-border shadow-sm relative overflow-hidden group hover:border-violet-400 dark:hover:border-fuchsia-500/40 transition-all cursor-pointer"
+                  className="min-w-70 sm:min-w-82.5 snap-center shrink-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200 dark:border-oled-border shadow-sm relative overflow-hidden group hover:border-violet-400 dark:hover:border-fuchsia-500/40 transition-all cursor-pointer"
                   onClick={() => match.link && window.open(match.link, "_blank")}
                 >
                   {/* Glowing Live Indicator Gradient */}
@@ -163,7 +165,7 @@ const SportsScoreCard: React.FC = () => {
 
                   {/* Card Header: League & Live Pill */}
                   <div className="flex justify-between items-center mb-4 gap-2">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate max-w-[170px]">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate max-w-42.5">
                       {match.league || (activeTab === "cricket" ? "Cricket" : "Football")}
                     </span>
 

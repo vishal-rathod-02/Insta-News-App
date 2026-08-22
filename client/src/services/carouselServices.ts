@@ -1,11 +1,13 @@
 
+import { getApiUrl } from "../utils/apiConfig";
+
 export const getCarouselNews = async (
   country: string,
   limit: number = 15
 ) => {
 
   const response = await fetch(
-    `/api/news/carousel/${country}?limit=${limit}`
+    getApiUrl(`/api/news/carousel/${country}?limit=${limit}`)
   );
 
   if (!response.ok) {

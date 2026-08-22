@@ -1,3 +1,5 @@
+import { getApiUrl } from "../utils/apiConfig";
+
 export const fetchArticleSummary = async (
   title: string,
   content: string,
@@ -7,7 +9,7 @@ export const fetchArticleSummary = async (
   }
 ): Promise<string> => {
 
-  const response = await fetch("/api/summarize", {
+  const response = await fetch(getApiUrl("/api/summarize"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
