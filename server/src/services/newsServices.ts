@@ -2,6 +2,7 @@ import Parser from "rss-parser";
 import { Country, Category, Article } from "../types/news.js";
 import { FEEDS, SUBCATEGORY_FEEDS } from "../config/feeds.js";
 import { extractImage, removeDuplicates } from "../utils/newsUtils.js";
+import { getCache, setCache } from "../config/redis.js";
 
 const parser = new Parser({
   timeout: 5000,
@@ -33,11 +34,7 @@ const fetchWithTimeout = async (url: string, timeoutMs: number = 3000): Promise<
   });
 };
 
-// -----------------------------
-// In-Memory Cache
-// -----------------------------
-const cache = new Map<string, Article[]>();
-const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+const CACHE_TTL_SECONDS = 180; // 3 minutes TTL
 
 // -----------------------------
 // Main Fetch Function
@@ -51,10 +48,11 @@ export const fetchNews = async (
   trending: boolean = false,
   page: number = 1
 ): Promise<Article[]> => {
-  const cacheKey = `${country}-${category}-${keyword ?? ""}-${onlyVideo}-${trending}`;
+  const cacheKey = `news:${country}:${category}:${keyword ?? ""}:${onlyVideo}:${trending}`;
 
-  if (cache.has(cacheKey)) {
-    return cache.get(cacheKey)!.slice((page - 1) * limit, page * limit);
+  const cachedArticles = await getCache<Article[]>(cacheKey);
+  if (cachedArticles && Array.isArray(cachedArticles) && cachedArticles.length > 0) {
+    return cachedArticles.slice((page - 1) * limit, page * limit);
   }
 
   let feedUrls: string[] = [];
@@ -138,8 +136,7 @@ export const fetchNews = async (
     );
   }
 
-  cache.set(cacheKey, articles);
-  setTimeout(() => cache.delete(cacheKey), CACHE_DURATION);
+  await setCache(cacheKey, articles, CACHE_TTL_SECONDS);
 
   return articles.slice((page - 1) * limit, page * limit);
 };
