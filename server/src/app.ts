@@ -7,6 +7,9 @@ import preferencesRouter from './routes/preferences.js';
 
 const app = express();
 
+// Enable trust proxy for reverse proxy platforms like Render/AWS/Vercel
+app.set("trust proxy", 1);
+
 const allowedOrigins = process.env.CLIENT_ORIGIN
   ? process.env.CLIENT_ORIGIN.split(',').map(origin => origin.trim())
   : '*';
