@@ -48,7 +48,7 @@ router.get('/live', async (req, res) => {
     };
 
     const [cricketResult, footballResult] = await Promise.allSettled([
-      fetchWithTimeout(parser.parseURL('http://static.cricinfo.com/rss/livescores.xml'), 5000),
+      fetchWithTimeout(parser.parseURL('https://static.cricinfo.com/rss/livescores.xml'), 5000),
       fetchESPN('https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard', 'football')
     ]);
 

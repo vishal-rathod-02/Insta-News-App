@@ -15,7 +15,18 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
+import rateLimit from "express-rate-limit";
+
 app.use(express.json({ limit: "10mb" }));
+
+// Rate Limiter to protect server against request flooding (100 requests per minute per IP)
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100,
+  message: { success: false, message: "Too many requests, please try again later." }
+});
+
+app.use("/api", apiLimiter);
 
 // Health check endpoint for Render / Uptime monitors
 app.get("/health", (req, res) => {
