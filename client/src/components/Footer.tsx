@@ -20,9 +20,9 @@ const Footer = () => {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-fuchsia-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8">
           {/* Brand Section */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-1">
+          <div>
             <div className="flex items-center gap-2 mb-6">
               <div className="relative p-2 rounded-xl bg-linear-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-500/25">
                 <Sparkles className="w-5 h-5 text-white" />
@@ -66,32 +66,6 @@ const Footer = () => {
               <FooterLink text="Privacy Policy" />
               <FooterLink text="Terms of Service" />
             </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <h3 className="font-bold text-slate-900 dark:text-white mb-6">
-              Stay Updated
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">
-              Get the most important stories delivered straight to your inbox.
-            </p>
-            <form
-              className="relative group"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl py-3 px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all dark:text-white"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 top-1.5 bottom-1.5 aspect-square flex items-center justify-center bg-violet-600 hover:bg-violet-700 text-white rounded-xl transition-colors shadow-md shadow-violet-500/20 active:scale-95"
-              >
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            </form>
           </div>
         </div>
 

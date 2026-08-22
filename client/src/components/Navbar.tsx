@@ -326,13 +326,6 @@ const Navbar: React.FC<NavbarProps> = ({
                   }}
                 />
               </SignedIn>
-              <button className="relative group overflow-hidden px-5 py-2 rounded-full font-bold text-white text-sm shadow-md transition-all active:scale-95 border border-white/20 hover:shadow-fuchsia-500/25">
-                <div className="absolute inset-0 bg-linear-to-r from-violet-600 to-fuchsia-600 transition-transform duration-500 group-hover:scale-110" />
-                <span className="relative flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Premium
-                </span>
-              </button>
             </div>
 
             {/* Mobile Menu */}

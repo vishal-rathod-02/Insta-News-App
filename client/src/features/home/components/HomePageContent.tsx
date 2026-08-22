@@ -1,7 +1,6 @@
 import React from "react";
 import type { NewsArticle } from "../../../utils/types";
 import Carousel from "../../../components/Carousel";
-import NewsletterBanner from "../../../components/NewsletterBanner";
 import RightSidebar from "../../../components/RightSidebar";
 import VerticalNavTracker from "../../../components/VerticalNavTracker";
 import HomeCategorySection from "./HomeCategorySection";
@@ -36,10 +35,8 @@ const HomePageContent: React.FC<HomePageContentProps> = ({
           <MobileTrendingTicker articles={trendingArticles} />
         )}
 
-        {HOME_FEED_CATEGORIES.map((category, index) => (
+        {HOME_FEED_CATEGORIES.map((category) => (
           <React.Fragment key={category.id}>
-            {index === 1 && <NewsletterBanner />}
-
             <HomeCategorySection
               category={category}
               country={country}
