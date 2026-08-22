@@ -7,8 +7,20 @@ import preferencesRouter from './routes/preferences.js';
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = process.env.CLIENT_ORIGIN
+  ? process.env.CLIENT_ORIGIN.split(',').map(origin => origin.trim())
+  : '*';
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json({ limit: "10mb" }));
+
+// Health check endpoint for Render / Uptime monitors
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 app.use("/api/summarize", summarizeRoutes);
 app.use("/api/news", newsRouter);
