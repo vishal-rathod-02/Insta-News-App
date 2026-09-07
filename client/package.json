@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.6",
+    "@clerk/themes": "^2.4.57",
     "@tailwindcss/vite": "^4.1.18",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.576.0",
