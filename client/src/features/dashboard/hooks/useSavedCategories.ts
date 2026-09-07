@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-react";
+import { useUser, useAuth } from "@clerk/clerk-react";
 import { useCallback, useEffect, useState } from "react";
 import {
   fetchDashboardPreferences,
@@ -7,6 +7,7 @@ import {
 
 export const useSavedCategories = () => {
   const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
   const [savedCategories, setSavedCategories] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -21,14 +22,15 @@ export const useSavedCategories = () => {
     setLoading(true);
 
     try {
-      const categories = await fetchDashboardPreferences(userId);
+      const token = await getToken();
+      const categories = await fetchDashboardPreferences(userId, token);
       setSavedCategories(categories);
     } catch (error) {
       console.error("Failed to fetch preferences", error);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, getToken]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -50,14 +52,15 @@ export const useSavedCategories = () => {
       }
 
       try {
-        await saveDashboardPreferences(userId, categories);
+        const token = await getToken();
+        await saveDashboardPreferences(categories, userId, token);
         setSavedCategories(categories);
         setIsEditing(false);
       } catch (error) {
         console.error("Failed to save preferences", error);
       }
     },
-    [userId],
+    [userId, getToken],
   );
 
   const startEditing = useCallback(() => {
