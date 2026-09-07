@@ -7,6 +7,7 @@ import SavedPage from "./pages/SavedPage";
 import HistoryPage from "./pages/HistoryPage";
 import MyNewsPage from "./features/dashboard/DashboardPageView";
 import ArticlePage from "./features/article-details/ArticleDetailsPageView";
+import { SignInPage, SignUpPage } from "./pages/AuthPages";
 import ErrorBoundary from "./components/shared/ErrorBoundary";
 
 const RouteNotFound = () => {
@@ -26,6 +27,8 @@ const App = () => {
             <Route path="history" element={<HistoryPage />} />
             <Route path="my-news" element={<MyNewsPage />} />
             <Route path="article" element={<ArticlePage />} />
+            <Route path="sign-in/*" element={<SignInPage />} />
+            <Route path="sign-up/*" element={<SignUpPage />} />
             <Route path="*" element={<RouteNotFound />} />
           </Route>
         </Routes>
