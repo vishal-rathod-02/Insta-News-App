@@ -19,8 +19,10 @@ app.use(cors({
   credentials: true
 }));
 import rateLimit from "express-rate-limit";
+import { clerkMiddleware } from "@clerk/express";
 
 app.use(express.json({ limit: "10mb" }));
+app.use(clerkMiddleware());
 
 // Rate Limiter to protect server against request flooding (100 requests per minute per IP)
 const apiLimiter = rateLimit({
