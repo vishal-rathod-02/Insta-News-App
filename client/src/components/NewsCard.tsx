@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import type { NewsCardProps } from "../utils/types";
 import FallbackImage from "../assets/News_Placeholder.webp";
-import { ExternalLink, Sparkles, Bookmark, Share2, Check } from "lucide-react";
+import { ExternalLink, Sparkles, Bookmark, Share2 } from "lucide-react";
 import { useUser as useLocalUser } from "../context/UserContext";
 import { useUser as useClerkUser, useClerk } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
+
+// Lazy load ShareSocialModal to prevent canvas bundling in initial card render
+const ShareSocialModal = lazy(() => import("./ShareSocialModal"));
 
 const NewsCard: React.FC<NewsCardProps> = ({
   article,
@@ -12,7 +15,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
   isFeatured = false,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const { isSaved, saveArticle, removeSavedArticle, addToHistory } =
     useLocalUser();
   const { user } = useClerkUser();
@@ -20,25 +23,10 @@ const NewsCard: React.FC<NewsCardProps> = ({
 
   const saved = isSaved(article.id);
 
-  const handleShareNews = async (e: React.MouseEvent) => {
+  const handleShareNews = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: article.title,
-          text: article.contentSnippet || "Check out this news article!",
-          url: article.link,
-        });
-      } catch (err) {
-        console.error("Share failed", err);
-      }
-    } else {
-      await navigator.clipboard.writeText(article.link);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
-    }
+    setShowShareModal(true);
   };
 
   const handleSave = (e: React.MouseEvent) => {
@@ -118,6 +106,7 @@ const NewsCard: React.FC<NewsCardProps> = ({
             group-hover:scale-110
           "
             loading="lazy"
+            decoding="async"
             onError={(e) => {
               const target = e.currentTarget;
               if (target.src !== defaultImage) {
@@ -217,10 +206,9 @@ const NewsCard: React.FC<NewsCardProps> = ({
               disabled={loading}
               className={`
                 flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap
-                ${
-                  loading
-                    ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
-                    : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
+                ${loading
+                  ? "bg-slate-100 dark:bg-oled-border text-slate-400 cursor-not-allowed"
+                  : "gradient-primary text-white shadow-lg shadow-violet-500/25 hover:shadow-[0_0_15px_rgba(167,139,250,0.5)]"
                 }
               `}
             >
@@ -236,23 +224,24 @@ const NewsCard: React.FC<NewsCardProps> = ({
           ) : (
             <button
               onClick={handleShareNews}
-              className="flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap bg-slate-100/80 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-violet-600 dark:hover:text-fuchsia-400"
+              className="flex-1 text-center inline-flex justify-center items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-4 py-2.5 rounded-full transition-all duration-300 active:scale-95 whitespace-nowrap bg-slate-100/80 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-violet-600 dark:hover:text-fuchsia-400 cursor-pointer"
             >
-              {copiedLink ? (
-                <>
-                  Copied!
-                  <Check className="w-3.5 h-3.5 text-green-500" />
-                </>
-              ) : (
-                <>
-                  Share
-                  <Share2 className="w-3.5 h-3.5" />
-                </>
-              )}
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Share</span>
             </button>
           )}
         </div>
       </div>
+
+      {/* INSTAGRAM / FACEBOOK SOCIAL SHARE STORY MODAL (LAZY LOADED) */}
+      {showShareModal && (
+        <Suspense fallback={null}>
+          <ShareSocialModal
+            article={article}
+            onClose={() => setShowShareModal(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { useNews } from "../hooks/useNews";
 import { Link } from "react-router-dom";
 import DataFetchError from "./shared/DataFetchError";
+import DailyPollCard from "./DailyPollCard";
 
 interface RightSidebarProps {
   country: string;
@@ -12,6 +13,9 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ country }) => {
 
   return (
     <aside className="hidden lg:block w-75 shrink-0 sticky top-32 self-start h-[calc(100vh-128px)] overflow-y-auto custom-scrollbar pr-2 space-y-6">
+      {/* DAILY COMMUNITY POLL CARD */}
+      <DailyPollCard />
+
       <div className="glass-panel rounded-2xl shadow-sm p-5">
         <h3 className="font-bold text-slate-900 dark:text-slate-50 text-lg mb-4 flex items-center gap-2">
           <span className="w-2 h-2 rounded-full gradient-primary neon-glow animate-pulse" />

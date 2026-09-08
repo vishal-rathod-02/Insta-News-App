@@ -5,14 +5,14 @@ import {
   ChevronRight,
   Trophy,
   Target,
-  Dribbble,
+  CircleDot,
   ExternalLink,
-  Flame
+  Flame,
 } from "lucide-react";
 
 import { getApiUrl } from "../utils/apiConfig";
 
-type Sport = "cricket" | "football" | "basketball";
+type Sport = "cricket" | "football" | "tennis";
 
 interface LiveMatchItem {
   id: string;
@@ -34,7 +34,7 @@ const SportsScoreCard: React.FC = () => {
   const [matchesData, setMatchesData] = useState<Record<Sport, LiveMatchItem[]>>({
     cricket: [],
     football: [],
-    basketball: [],
+    tennis: [],
   });
   const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -91,18 +91,19 @@ const SportsScoreCard: React.FC = () => {
         {/* Navigation and Tabs */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#0a0a0a] p-1.5 rounded-2xl border border-slate-200 dark:border-oled-border">
-            {(["cricket", "football", "basketball"] as Sport[]).map((sport) => (
+            {(["cricket", "football", "tennis"] as Sport[]).map((sport) => (
               <button
                 key={sport}
                 onClick={() => setActiveTab(sport)}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition-all duration-300 ${activeTab === sport
-                  ? 'bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50 scale-105'
-                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent'
-                  }`}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition-all duration-300 ${
+                  activeTab === sport
+                    ? "bg-white dark:bg-slate-800 text-violet-600 dark:text-fuchsia-400 shadow-sm border border-slate-200/50 dark:border-slate-700/50 scale-105"
+                    : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 border border-transparent"
+                }`}
               >
                 {sport === "cricket" && <Trophy className="w-3.5 h-3.5 text-amber-500" />}
                 {sport === "football" && <Target className="w-3.5 h-3.5 text-emerald-500" />}
-                {sport === "basketball" && <Dribbble className="w-3.5 h-3.5 text-orange-500" />}
+                {sport === "tennis" && <CircleDot className="w-3.5 h-3.5 text-lime-500" />}
                 {sport}
               </button>
             ))}
@@ -143,8 +144,31 @@ const SportsScoreCard: React.FC = () => {
               </motion.div>
             )}
 
-            {!loading &&
-              matchesData[activeTab]?.map((match, idx) => (
+            {!loading && (() => {
+              const liveMatches = (matchesData[activeTab] || []).filter((m) => m.isLive);
+
+              if (liveMatches.length === 0) {
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="w-full py-8 px-6 rounded-3xl bg-slate-100/60 dark:bg-[#0A0414]/60 border border-slate-200/80 dark:border-violet-500/15 flex flex-col items-center justify-center text-center gap-2"
+                  >
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+                      <div className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-violet-500"></span>
+                      </div>
+                      <span>No Live {activeTab.toUpperCase()} Matches In Progress</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-sm">
+                      Live match scorecards update automatically in real-time as soon as fixtures commence.
+                    </p>
+                  </motion.div>
+                );
+              }
+
+              return liveMatches.map((match, idx) => (
                 <motion.div
                   key={`${activeTab}-${match.id}`}
                   initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -159,33 +183,25 @@ const SportsScoreCard: React.FC = () => {
                   onClick={() => match.link && window.open(match.link, "_blank")}
                 >
                   {/* Glowing Live Indicator Gradient */}
-                  {match.isLive && (
-                    <div className="absolute top-0 right-0 w-36 h-36 bg-red-500/10 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-1000 group-hover:opacity-100 opacity-60"></div>
-                  )}
+                  <div className="absolute top-0 right-0 w-36 h-36 bg-red-500/10 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none transition-opacity duration-1000 group-hover:opacity-100 opacity-60"></div>
 
                   {/* Card Header: League & Live Pill */}
                   <div className="flex justify-between items-center mb-4 gap-2">
                     <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate max-w-42.5">
-                      {match.league || (activeTab === "cricket" ? "Cricket" : "Football")}
+                      {match.league || (activeTab === "cricket" ? "Cricket" : activeTab === "tennis" ? "ATP Tennis" : "Football")}
                     </span>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      {match.isLive ? (
-                        <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-black uppercase tracking-wider animate-pulse">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                          LIVE
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                          {match.time}
-                        </span>
-                      )}
+                      <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 text-[10px] font-black uppercase tracking-wider animate-pulse">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                        LIVE
+                      </span>
                     </div>
                   </div>
 
-                  {/* Teams & Scores */}
+                  {/* Teams / Players & Scores */}
                   <div className="space-y-3.5">
-                    {/* Team 1 */}
+                    {/* Team 1 / Player 1 */}
                     <div className="flex justify-between items-center gap-3">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         {match.logo1 ? (
@@ -194,7 +210,7 @@ const SportsScoreCard: React.FC = () => {
                             alt={match.team1}
                             className="w-8 h-8 object-contain shrink-0 rounded-full p-0.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
                             onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
+                              (e.target as HTMLElement).style.display = "none";
                             }}
                           />
                         ) : (
@@ -211,7 +227,7 @@ const SportsScoreCard: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Team 2 */}
+                    {/* Team 2 / Player 2 */}
                     <div className="flex justify-between items-center gap-3">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         {match.logo2 ? (
@@ -220,7 +236,7 @@ const SportsScoreCard: React.FC = () => {
                             alt={match.team2}
                             className="w-8 h-8 object-contain shrink-0 rounded-full p-0.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
                             onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
+                              (e.target as HTMLElement).style.display = "none";
                             }}
                           />
                         ) : (
@@ -241,8 +257,8 @@ const SportsScoreCard: React.FC = () => {
                   {/* Card Footer: Match Status */}
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <Flame className={`w-3.5 h-3.5 shrink-0 ${match.isLive ? "text-red-500" : "text-slate-400"}`} />
-                      <p className={`text-xs font-semibold truncate ${match.isLive ? "text-red-600 dark:text-red-400" : "text-slate-500 dark:text-slate-400"}`}>
+                      <Flame className="w-3.5 h-3.5 shrink-0 text-red-500" />
+                      <p className="text-xs font-semibold truncate text-red-600 dark:text-red-400">
                         {match.status}
                       </p>
                     </div>
@@ -254,7 +270,8 @@ const SportsScoreCard: React.FC = () => {
                     )}
                   </div>
                 </motion.div>
-              ))}
+              ));
+            })()}
           </AnimatePresence>
         </div>
       </div>
