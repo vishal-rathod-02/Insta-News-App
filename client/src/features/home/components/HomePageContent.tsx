@@ -35,11 +35,12 @@ const HomePageContent: React.FC<HomePageContentProps> = ({
           <MobileTrendingTicker articles={trendingArticles} />
         )}
 
-        {HOME_FEED_CATEGORIES.map((category) => (
+        {HOME_FEED_CATEGORIES.map((category, index) => (
           <React.Fragment key={category.id}>
             <HomeCategorySection
               category={category}
               country={country}
+              isImmediate={index < 2}
               onExplore={() => onExploreCategory(category.id)}
               onSummarize={onSummarize}
             />

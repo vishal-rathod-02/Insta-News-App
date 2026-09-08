@@ -12,6 +12,40 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  build: {
+    target: 'esnext',
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('/lucide-react/') || id.includes('\\lucide-react\\')) {
+              return 'vendor-icons';
+            }
+            if (id.includes('/@clerk/') || id.includes('\\@clerk\\')) {
+              return 'vendor-clerk';
+            }
+            if (id.includes('/framer-motion/') || id.includes('\\framer-motion\\')) {
+              return 'vendor-motion';
+            }
+            if (
+              id.includes('/react/') ||
+              id.includes('\\react\\') ||
+              id.includes('/react-dom/') ||
+              id.includes('\\react-dom\\') ||
+              id.includes('/react-router/') ||
+              id.includes('\\react-router\\') ||
+              id.includes('/react-router-dom/') ||
+              id.includes('\\react-router-dom\\')
+            ) {
+              return 'vendor-react';
+            }
+          }
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       "/api": {

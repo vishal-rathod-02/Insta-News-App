@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import NewsSection from "../../../components/NewsSection";
+import NewsCardSkeleton from "../../../components/shared/NewsCardSkeleton";
 import { CATEGORY_ICONS } from "../../../utils/CategoryIcons";
 import type { NewsArticle, NewsCategory } from "../../../utils/types";
 
 interface HomeCategorySectionProps {
   category: NewsCategory;
   country: string;
+  isImmediate?: boolean;
   onExplore: () => void;
   onSummarize: (article: NewsArticle) => void;
 }
@@ -13,9 +15,33 @@ interface HomeCategorySectionProps {
 const HomeCategorySection: React.FC<HomeCategorySectionProps> = ({
   category,
   country,
+  isImmediate = false,
   onExplore,
   onSummarize,
 }) => {
+  const [isVisible, setIsVisible] = useState(isImmediate);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isVisible) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "350px" } // Preload when 350px from entering viewport
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isVisible]);
+
   const icon = CATEGORY_ICONS[category.id];
 
   const renderedIcon = React.isValidElement(icon)
@@ -26,7 +52,7 @@ const HomeCategorySection: React.FC<HomeCategorySectionProps> = ({
     : icon;
 
   return (
-    <div id={category.id} className="relative scroll-m-32">
+    <div id={category.id} ref={sectionRef} className="relative scroll-m-32 min-h-75">
       <div className="group flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8 border-b border-violet-50 dark:border-oled-border/50 pb-4">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-2xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-fuchsia-400 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xs">
@@ -58,12 +84,20 @@ const HomeCategorySection: React.FC<HomeCategorySectionProps> = ({
         </button>
       </div>
 
-      <NewsSection
-        title=""
-        categoryId={category.id}
-        country={country}
-        onSummarize={onSummarize}
-      />
+      {isVisible ? (
+        <NewsSection
+          title=""
+          categoryId={category.id}
+          country={country}
+          onSummarize={onSummarize}
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <NewsCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

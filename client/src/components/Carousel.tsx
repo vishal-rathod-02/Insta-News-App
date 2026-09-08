@@ -79,11 +79,11 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
     setTouchStartX(null);
   };
 
-  /*  Loading Skeleton */
+  /*  Loading Skeleton with Exact Dimensions (CLS: 0.00) */
   if (isLoading) {
     return (
       <section className="mb-12">
-        <div className="h-112 rounded-xl bg-slate-200 dark:bg-slate-700 animate-pulse" />
+        <div className="h-112 sm:h-120 lg:h-140 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 animate-pulse" />
       </section>
     );
   }
@@ -108,85 +108,102 @@ const Carousel: React.FC<CarouselProps> = ({ country, onSummarize }) => {
     >
       {/* SLIDES */}
       <div className="relative h-112 sm:h-120 lg:h-140 overflow-hidden rounded-xl shadow-lg">
-        {articles.map((article, index) => (
-          <div
-            key={`${article.id}-${index}`}
-            className={`
-              absolute inset-0 transition-all duration-700 ease-in-out
-              ${index === currentIndex
-                ? "opacity-100 scale-100 z-10"
-                : "opacity-0 scale-105"
-              }
+        {articles.map((article, index) => {
+          const isActive = index === currentIndex;
+          const isNext = index === (currentIndex + 1) % articles.length;
+          const isPrev = index === (currentIndex - 1 + articles.length) % articles.length;
+
+          // Only render active and immediately adjacent slides to avoid DOM & network bloat
+          if (!isActive && !isNext && !isPrev) return null;
+
+          return (
+            <div
+              key={`${article.id}-${index}`}
+              className={`
+                absolute inset-0 transition-all duration-700 ease-in-out
+                ${isActive
+                  ? "opacity-100 scale-100 z-10 pointer-events-auto"
+                  : "opacity-0 scale-105 pointer-events-none"
+                }
               `}
-            title={article.title}
-          >
-            <div className="absolute inset-0 overflow-hidden">
-              <img
-                src={article.imageUrl ?? fallbackimg}
-                alt={article.title}
-                className={`w-full h-full will-change-transformtransition-transform duration-6000 ease-in 
-                  `}
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
-
-            {/* Video Badge */}
-            {article.isVideo && (
-              <div className="absolute top-4 left-4 sm:top-5 sm:left-5 flex items-center gap-2 bg-black/40 backdrop-blur-md text-white text-xs sm:text-sm px-3 py-1.5 rounded-full font-medium border border-white/20 shadow-lg">
-                <div className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-red-500"></span>
-                </div>
-                <span className="tracking-wide">Watch Video</span>
+              title={article.title}
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                <img
+                  src={article.imageUrl || fallbackimg}
+                  alt={article.title}
+                  fetchPriority={isActive ? "high" : "low"}
+                  loading={isActive ? "eager" : "lazy"}
+                  decoding="async"
+                  className="w-full h-full object-cover will-change-transform"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== fallbackimg) {
+                      target.src = fallbackimg;
+                    }
+                  }}
+                />
               </div>
-            )}
 
-            {/* CONTENT */}
-            <div className="absolute bottom-6 left-0 p-6 lg:p-10 text-white max-w-4xl">
-              <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider uppercase bg-violet-600 rounded-full shadow-lg">
-                Discover
-              </span>
+              <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/45 to-transparent" />
 
-              <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 leading-tight">
-                {article.title}
-              </h2>
-
-              <p className="text-sm opacity-80 mb-5">{article.source}</p>
-
-              <div className="flex gap-4">
-                <Link
-                  to="/article"
-                  state={{ article }}
-                  title={article.title}
-                  className="flex items-center gap-2 bg-white text-[#120C1F] hover:bg-slate-100 px-4 py-2 rounded-md font-bold text-sm shadow-xl transition-transform active:scale-95"
-                >
-                  Read More
-                </Link>
-
-                <button
-                  onClick={() => onSummarize(article)}
-                  title="Summarize this Feed"
-                  className="relative group p-[1.5px] rounded-md overflow-hidden active:scale-95 transition-transform shadow-lg cursor-pointer flex items-center justify-center shrink-0"
-                >
-                  {/* Continuous AI Spinning Glow */}
-                  <div
-                    className="absolute w-[300%] h-[300%] animate-spin opacity-90"
-                    style={{
-                      animationDuration: "4s",
-                      background:
-                        "conic-gradient(from 0deg, transparent 0%, transparent 60%, #F59E0B 85%, #8B5CF6 100%)",
-                    }}
-                  />
-                  {/* Premium Frosted Glass Core */}
-                  <div className="relative flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/5 text-white hover:bg-black/60 transition-colors font-semibold rounded-[4.5px] text-sm w-full h-full z-10">
-                    Summarize ✨
+              {/* Video Badge */}
+              {article.isVideo && (
+                <div className="absolute top-4 left-4 sm:top-5 sm:left-5 flex items-center gap-2 bg-black/40 backdrop-blur-md text-white text-xs sm:text-sm px-3 py-1.5 rounded-full font-medium border border-white/20 shadow-lg">
+                  <div className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-red-500"></span>
                   </div>
-                </button>
+                  <span className="tracking-wide">Watch Video</span>
+                </div>
+              )}
+
+              {/* CONTENT */}
+              <div className="absolute bottom-6 left-0 p-6 lg:p-10 text-white max-w-4xl">
+                <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider uppercase bg-violet-600 rounded-full shadow-lg">
+                  Discover
+                </span>
+
+                <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-3 leading-tight line-clamp-2 sm:line-clamp-3">
+                  {article.title}
+                </h2>
+
+                <p className="text-sm opacity-80 mb-5">{article.source}</p>
+
+                <div className="flex gap-4">
+                  <Link
+                    to="/article"
+                    state={{ article }}
+                    title={article.title}
+                    className="flex items-center gap-2 bg-white text-[#120C1F] hover:bg-slate-100 px-4 py-2 rounded-md font-bold text-sm shadow-xl transition-transform active:scale-95"
+                  >
+                    Read More
+                  </Link>
+
+                  <button
+                    onClick={() => onSummarize(article)}
+                    title="Summarize this Feed"
+                    className="relative group p-[1.5px] rounded-md overflow-hidden active:scale-95 transition-transform shadow-lg cursor-pointer flex items-center justify-center shrink-0"
+                  >
+                    {/* Continuous AI Spinning Glow */}
+                    <div
+                      className="absolute w-[300%] h-[300%] animate-spin opacity-90"
+                      style={{
+                        animationDuration: "4s",
+                        background:
+                          "conic-gradient(from 0deg, transparent 0%, transparent 60%, #F59E0B 85%, #8B5CF6 100%)",
+                      }}
+                    />
+                    {/* Premium Frosted Glass Core */}
+                    <div className="relative flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/5 text-white hover:bg-black/60 transition-colors font-semibold rounded-[4.5px] text-sm w-full h-full z-10">
+                      Summarize ✨
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ARROWS */}

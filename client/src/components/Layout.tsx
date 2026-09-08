@@ -1,13 +1,15 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, lazy, Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import SummarizeModal from "./SummarizeModal";
+import BreakingNewsBanner from "./BreakingNewsBanner";
 import { useTheme } from "../hooks/useTheme";
 import type { NewsArticle } from "../utils/types";
 import { CATEGORIES } from "../utils/Categories";
-
 import Footer from "./Footer";
+
+// Lazy load heavy AI Summarize Modal
+const SummarizeModal = lazy(() => import("./SummarizeModal"));
 
 export type LayoutContextType = {
   country: string;
@@ -72,18 +74,23 @@ const Layout: React.FC = () => {
           activeCategory={activeCategory}
         />
 
-        <main className="flex-1 pt-32 px-4 md:px-8 lg:px-12 max-w-[1600px] w-full mx-auto pb-20">
+        <main className="flex-1 pt-32 px-4 md:px-8 lg:px-12 max-w-400 w-full mx-auto pb-20">
           <Outlet context={contextValue} />
         </main>
 
         <Footer />
 
-        {/* SUMMARY MODAL */}
+        {/* BREAKING NEWS TOAST ALERT */}
+        <BreakingNewsBanner onSummarize={handleSummarize} />
+
+        {/* SUMMARY MODAL (LAZY LOADED) */}
         {summarizeArticle && (
-          <SummarizeModal
-            article={summarizeArticle}
-            onClose={closeSummarizeModal}
-          />
+          <Suspense fallback={null}>
+            <SummarizeModal
+              article={summarizeArticle}
+              onClose={closeSummarizeModal}
+            />
+          </Suspense>
         )}
       </div>
     </div>
