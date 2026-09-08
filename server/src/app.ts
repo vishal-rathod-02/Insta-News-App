@@ -4,6 +4,8 @@ import summarizeRoutes from "./routes/summarize.js";
 import newsRouter from './routes/news.js';
 import sportsRouter from './routes/sports.js';
 import preferencesRouter from './routes/preferences.js';
+import marketsRouter from './routes/markets.js';
+import pollsRouter from './routes/polls.js';
 
 const app = express();
 
@@ -42,6 +44,8 @@ app.use("/api/summarize", summarizeRoutes);
 app.use("/api/news", newsRouter);
 app.use("/api/sports", sportsRouter);
 app.use("/api/preferences", preferencesRouter);
+app.use("/api/markets", marketsRouter);
+app.use("/api/polls", pollsRouter);
 
 // Global Error Handler to prevent server crashes
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

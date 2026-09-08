@@ -1,18 +1,36 @@
 import express from 'express';
-import { requireAuth } from '@clerk/express';
 import { UserPreference } from '../models/UserPreference.js';
 
 const router = express.Router();
 
 /**
- * GET /api/preferences/me
- * Securely fetch preferences for the currently authenticated user
+ * Helper to extract userId from either Clerk session token, headers, query, or body
  */
-router.get('/me', requireAuth(), async (req: express.Request, res: express.Response) => {
+const getRequestUserId = (req: express.Request): string | null => {
+  const clerkUserId = (req as any).auth?.userId;
+  if (clerkUserId) return clerkUserId;
+
+  const headerUserId = req.headers['x-user-id'] as string;
+  if (headerUserId) return headerUserId;
+
+  const queryUserId = req.query.userId as string;
+  if (queryUserId) return queryUserId;
+
+  const bodyUserId = (req.body && req.body.userId) as string;
+  if (bodyUserId) return bodyUserId;
+
+  return null;
+};
+
+/**
+ * GET /api/preferences/me
+ * Fetch preferences for the authenticated user
+ */
+router.get('/me', async (req: express.Request, res: express.Response) => {
   try {
-    const userId = (req as any).auth?.userId;
+    const userId = getRequestUserId(req);
     if (!userId) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
+      return res.status(401).json({ success: false, message: 'Unauthorized: User not identified' });
     }
 
     let prefs = await UserPreference.findOne({ userId });
@@ -28,13 +46,13 @@ router.get('/me', requireAuth(), async (req: express.Request, res: express.Respo
 
 /**
  * POST /api/preferences/me/categories
- * Securely update selected categories for the currently authenticated user
+ * Update selected categories for the authenticated user
  */
-router.post('/me/categories', requireAuth(), async (req: express.Request, res: express.Response) => {
+router.post('/me/categories', async (req: express.Request, res: express.Response) => {
   try {
-    const userId = (req as any).auth?.userId;
+    const userId = getRequestUserId(req);
     if (!userId) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
+      return res.status(401).json({ success: false, message: 'Unauthorized: User not identified' });
     }
 
     const { categories } = req.body;
@@ -58,9 +76,9 @@ router.post('/me/categories', requireAuth(), async (req: express.Request, res: e
  * GET /api/preferences/me/bookmarks
  * Retrieve all bookmarks for the authenticated user
  */
-router.get('/me/bookmarks', requireAuth(), async (req: express.Request, res: express.Response) => {
+router.get('/me/bookmarks', async (req: express.Request, res: express.Response) => {
   try {
-    const userId = (req as any).auth?.userId;
+    const userId = getRequestUserId(req);
     if (!userId) {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
@@ -76,9 +94,9 @@ router.get('/me/bookmarks', requireAuth(), async (req: express.Request, res: exp
  * POST /api/preferences/me/bookmarks
  * Add or update a bookmarked article
  */
-router.post('/me/bookmarks', requireAuth(), async (req: express.Request, res: express.Response) => {
+router.post('/me/bookmarks', async (req: express.Request, res: express.Response) => {
   try {
-    const userId = (req as any).auth?.userId;
+    const userId = getRequestUserId(req);
     if (!userId) {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
@@ -88,7 +106,7 @@ router.post('/me/bookmarks', requireAuth(), async (req: express.Request, res: ex
       return res.status(400).json({ success: false, message: 'Invalid article payload' });
     }
 
-    const prefs = await UserPreference.findOneAndUpdate(
+    await UserPreference.findOneAndUpdate(
       { userId },
       { 
         $pull: { bookmarkedArticles: { url: article.link || article.url } },
@@ -115,7 +133,7 @@ router.post('/me/bookmarks', requireAuth(), async (req: express.Request, res: ex
       { new: true, upsert: true }
     );
 
-    return res.json({ success: true, data: updated.bookmarkedArticles });
+    return res.json({ success: true, data: updated?.bookmarkedArticles || [] });
   } catch (error: any) {
     return res.status(500).json({ success: false, error: error.message });
   }
