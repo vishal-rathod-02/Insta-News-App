@@ -22,4 +22,5 @@ export interface Article {
   imageUrl: string | null;
   isVideo: boolean;
   score?: number;
+  category?: string;
 }
