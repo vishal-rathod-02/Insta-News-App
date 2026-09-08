@@ -18,6 +18,7 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/clerk-react";
+import MarketTicker from "./MarketTicker";
 
 const SUGGESTIONS = [
   "Global News",
@@ -399,6 +400,9 @@ const Navbar: React.FC<NavbarProps> = ({
           </LayoutGroup>
         </div>
       </div>
+
+      {/* LIVE MARKET & CRYPTO MARQUEE TICKER */}
+      <MarketTicker />
     </header>
   );
 };

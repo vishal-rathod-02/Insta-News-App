@@ -7,6 +7,7 @@ import {
   ArrowUpRight,
   ArrowUp,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -23,48 +24,47 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8">
           {/* Brand Section */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="relative p-2 rounded-xl bg-linear-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-500/25">
+            <Link to="/" className="flex items-center gap-2 mb-6 group">
+              <div className="relative p-2 rounded-xl bg-linear-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-500/25 group-hover:scale-105 transition-transform">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <span className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-violet-600 to-fuchsia-600">
                 InstaNews
               </span>
-            </div>
+            </Link>
             <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
               Experience the future of news consumption. AI-summarized,
               beautifully presented, and intelligently curated just for you.
             </p>
             <div className="flex gap-4">
-              <SocialLink icon={<Twitter className="w-4 h-4" />} href="#" />
-              <SocialLink icon={<Github className="w-4 h-4" />} href="#" />
-              <SocialLink icon={<Linkedin className="w-4 h-4" />} href="#" />
+              <SocialLink icon={<Twitter className="w-4 h-4" />} href="https://twitter.com" />
+              <SocialLink icon={<Github className="w-4 h-4" />} href="https://github.com" />
+              <SocialLink icon={<Linkedin className="w-4 h-4" />} href="https://linkedin.com" />
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-bold text-slate-900 dark:text-white mb-6">
+            <h3 className="font-bold text-slate-900 dark:text-white mb-6 tracking-wide">
               Explore
             </h3>
             <ul className="space-y-4">
-              <FooterLink text="Top Stories" />
-              <FooterLink text="Technology" />
-              <FooterLink text="Business" />
-              <FooterLink text="Entertainment" />
+              <FooterLink text="Top Stories" to="/" />
+              <FooterLink text="Technology" to="/category/technology" />
+              <FooterLink text="Business" to="/category/business" />
+              <FooterLink text="Entertainment" to="/category/entertainment" />
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <h3 className="font-bold text-slate-900 dark:text-white mb-6">
+            <h3 className="font-bold text-slate-900 dark:text-white mb-6 tracking-wide">
               Company
             </h3>
             <ul className="space-y-4">
-              <FooterLink text="About Us" />
-              <FooterLink text="Careers" />
-              <FooterLink text="Privacy Policy" />
-              <FooterLink text="Terms of Service" />
+              <FooterLink text="About Us" to="/about" />
+              <FooterLink text="Privacy Policy" to="/privacy" />
+              <FooterLink text="Terms & Conditions" to="/terms" />
             </ul>
           </div>
         </div>
@@ -77,7 +77,7 @@ const Footer = () => {
 
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-fuchsia-400 transition-colors group"
+            className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-fuchsia-400 transition-colors group cursor-pointer"
           >
             Back to top
             <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-violet-100 dark:group-hover:bg-[#2A1D40] transition-colors">
@@ -99,16 +99,18 @@ const SocialLink = ({
 }) => (
   <a
     href={href}
+    target="_blank"
+    rel="noopener noreferrer"
     className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 hover:bg-linear-to-br hover:from-violet-600 hover:to-fuchsia-600 hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-sm hover:shadow-lg hover:shadow-violet-500/25"
   >
     {icon}
   </a>
 );
 
-const FooterLink = ({ text }: { text: string }) => (
+const FooterLink = ({ text, to }: { text: string; to: string }) => (
   <li>
-    <a
-      href="#"
+    <Link
+      to={to}
       className="group flex items-center text-sm text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-fuchsia-400 transition-colors"
     >
       <span className="w-0 overflow-hidden opacity-0 group-hover:w-3 group-hover:opacity-100 transition-all duration-300 ease-out">
@@ -117,7 +119,7 @@ const FooterLink = ({ text }: { text: string }) => (
       <span className="group-hover:translate-x-1 transition-transform duration-300 ease-out">
         {text}
       </span>
-    </a>
+    </Link>
   </li>
 );
 

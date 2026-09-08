@@ -75,6 +75,21 @@ body {
   animation: fadeIn 0.2s ease-out;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
 /* Global Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 6px;
