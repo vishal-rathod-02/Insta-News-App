@@ -12,6 +12,7 @@ export interface NewsArticle {
   isoDate: string;
   source: string;
   imageUrl?: string;
+  category?: string;
 }
 
 export interface UseNewsOptions {
