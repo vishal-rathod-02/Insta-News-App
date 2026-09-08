@@ -5,12 +5,79 @@ import { getCache, setCache } from '../config/redis.js';
 const router = express.Router();
 const parser = new Parser();
 
-const SPORTS_CACHE_KEY = 'sports:live:v2';
-const SPORTS_CACHE_TTL = 60; // 60 seconds TTL
+const SPORTS_CACHE_KEY = 'sports:live:v4';
+const SPORTS_CACHE_TTL = 45; // 45 seconds TTL
 
-//Fetch ESPN Football / Basketball Matches (Rich with Team Logos & Badges) // 
+// Comprehensive Country & Cricket Team Mapping using Strict Regex Word Boundaries
+const CRICKET_TEAMS_MAP: { patterns: RegExp[]; code?: string; logo?: string; league?: string }[] = [
+  // International Nations
+  { patterns: [/\b(india|ind|bharat)\b/i], code: "IN" },
+  { patterns: [/\b(australia|aus|aussie)\b/i], code: "AU" },
+  { patterns: [/\b(england|eng)\b/i], code: "GB" },
+  { patterns: [/\b(south africa|rsa|proteas)\b/i], code: "ZA" },
+  { patterns: [/\b(new zealand|nz|blackcaps)\b/i], code: "NZ" },
+  { patterns: [/\b(pakistan|pak)\b/i], code: "PK" },
+  { patterns: [/\b(sri lanka|sl|lanka)\b/i], code: "LK" },
+  { patterns: [/\b(west indies|windies|caribbean|guyana|antigua|barbados|jamaica|trinbago|saint lucia|st kitts|nevis)\b/i], code: "JM" },
+  { patterns: [/\b(bangladesh|ban|tigers)\b/i], code: "BD" },
+  { patterns: [/\b(afghanistan|afg)\b/i], code: "AF" },
+  { patterns: [/\b(ireland|ire)\b/i], code: "IE" },
+  { patterns: [/\b(zimbabwe|zim)\b/i], code: "ZW" },
+  { patterns: [/\b(netherlands|ned|dutch)\b/i], code: "NL" },
+  { patterns: [/\b(scotland|sco)\b/i], code: "GB" },
+  { patterns: [/\b(united arab emirates|uae|emirates)\b/i], code: "AE" },
+  { patterns: [/\b(nepal|nep)\b/i], code: "NP" },
+  { patterns: [/\b(united states|usa|america)\b/i], code: "US" },
+  { patterns: [/\b(canada|can)\b/i], code: "CA" },
+  { patterns: [/\b(oman|oma)\b/i], code: "OM" },
+  { patterns: [/\b(namibia|nam)\b/i], code: "NA" },
+  { patterns: [/\b(papua new guinea|png)\b/i], code: "PG" },
+  { patterns: [/\b(kenya)\b/i], code: "KE" },
+  { patterns: [/\b(uganda)\b/i], code: "UG" },
+  { patterns: [/\b(hong kong)\b/i], code: "HK" },
+  { patterns: [/\b(singapore)\b/i], code: "SG" },
+  { patterns: [/\b(thailand)\b/i], code: "TH" },
+  { patterns: [/\b(kuwait)\b/i], code: "KW" },
+  { patterns: [/\b(qatar)\b/i], code: "QA" },
+  { patterns: [/\b(italy)\b/i], code: "IT" },
+  { patterns: [/\b(jersey)\b/i], code: "JE" },
+  { patterns: [/\b(bahrain)\b/i], code: "BH" },
+  { patterns: [/\b(saudi arabia)\b/i], code: "SA" },
+  
+  // English County Teams (UK Flag)
+  { patterns: [/\b(leicestershire|somerset|surrey|yorkshire|lancashire|warwickshire|essex|hampshire|middlesex|nottinghamshire|sussex|kent|glamorgan|gloucestershire|northamptonshire|derbyshire|durham|worcestershire)\b/i], code: "GB", league: "County Championship" },
 
-const fetchESPN = async (url: string, prefix: string, defaultLeague: string, leagueLogo?: string) => {
+  // Indian Domestic & Zonal Teams (Duleep Trophy, Ranji Trophy, Deodhar, etc.)
+  { patterns: [/\b(east zone|west zone|north zone|south zone|central zone|north east zone|mumbai|delhi|karnataka|tamil nadu|bengal|saurashtra|vidarbha|baroda|hyderabad|andhra|punjab|haryana|uttar pradesh|rajasthan|madhya pradesh|kerala|gujarat|jharkhand|assam|odisha|services|railways)\b/i], code: "IN", league: "Indian Domestic" },
+
+  // Australian Domestic (Shield / Marsh Cup / BBL)
+  { patterns: [/\b(new south wales|nsw|victoria|vic|queensland|qld|western australia|wa|south australia|sa|tasmania|tas|sixers|scorchers|stars|renegades|strikers|thunder|heat|hurricanes)\b/i], code: "AU", league: "Australian Cricket" },
+
+  // IPL
+  { patterns: [/\b(chennai super kings|csk|mumbai indians|mi|royal challengers|bengaluru|rcb|kolkata knight riders|kkr|rajasthan royals|rr|sunrisers|srh|delhi capitals|dc|punjab kings|pbks|gujarat titans|gt|lucknow super giants|lsg)\b/i], code: "IN", league: "IPL" },
+];
+
+/**
+ * Returns accurate country flag URL using strict regex word boundaries
+ */
+const getCricketTeamLogo = (teamName: string): { logo?: string; league?: string } => {
+  if (!teamName) return {};
+  const normalized = teamName.trim();
+
+  for (const entry of CRICKET_TEAMS_MAP) {
+    for (const pattern of entry.patterns) {
+      if (pattern.test(normalized)) {
+        const logo = entry.logo || (entry.code ? `https://flagsapi.com/${entry.code}/flat/64.png` : undefined);
+        return { logo, league: entry.league };
+      }
+    }
+  }
+
+  return {};
+};
+
+// Fetch ESPN Football Matches
+const fetchESPNFootball = async (url: string, prefix: string, defaultLeague: string, leagueLogo?: string) => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -18,7 +85,7 @@ const fetchESPN = async (url: string, prefix: string, defaultLeague: string, lea
     clearTimeout(timeoutId);
     const data = await res.json();
     
-    return data.events?.reverse().slice(0, 10).map((event: any, index: number) => {
+    return data.events?.map((event: any, index: number) => {
       const comp = event.competitions[0];
       const home = comp.competitors.find((c: any) => c.homeAway === 'home');
       const away = comp.competitors.find((c: any) => c.homeAway === 'away');
@@ -42,36 +109,62 @@ const fetchESPN = async (url: string, prefix: string, defaultLeague: string, lea
         leagueLogo: leagueLogo || data.leagues?.[0]?.logos?.[0]?.href,
         link: gameLink
       };
-    }) || [];
+    }).filter((m: any) => m.isLive) || []; // Strictly keep only LIVE in-progress matches
   } catch (error) {
     console.error(`ESPN fetch error for ${prefix}:`, error);
     return [];
   }
 };
 
-// ------------------------------------------------------------------
-// Fetch SportScore API (If API key provided)
-// ------------------------------------------------------------------
-const fetchSportScoreAPI = async () => {
-  const apiKey = process.env.SPORTSCORE_API_KEY;
-  if (!apiKey || apiKey.trim() === "" || apiKey.includes("YOUR_")) {
-    return null;
-  }
-
+// Fetch ESPN Tennis Matches (ATP & Grand Slams)
+const fetchESPNTennis = async () => {
   try {
-    const res = await fetch('https://sportscore1.p.rapidapi.com/sports/1/events/live', {
-      headers: {
-        'x-rapidapi-key': apiKey,
-        'x-rapidapi-host': 'sportscore1.p.rapidapi.com'
-      }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard', {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    const data = await res.json();
+
+    const matches: any[] = [];
+    (data.events || []).forEach((event: any) => {
+      const tournamentName = event.name || 'ATP Tour';
+      (event.groupings || []).forEach((grouping: any) => {
+        (grouping.competitions || []).forEach((comp: any, idx: number) => {
+          if (comp.competitors && comp.competitors.length >= 2) {
+            const p1 = comp.competitors[0];
+            const p2 = comp.competitors[1];
+
+            const score1 = (p1.linescores || []).map((l: any) => l.value).join(' ');
+            const score2 = (p2.linescores || []).map((l: any) => l.value).join(' ');
+            const isLive = comp.status?.type?.state === 'in';
+
+            if (isLive) {
+              matches.push({
+                id: `tennis-${idx}`,
+                team1: p1.athlete?.displayName || p1.athlete?.shortName || 'Player 1',
+                team2: p2.athlete?.displayName || p2.athlete?.shortName || 'Player 2',
+                logo1: p1.athlete?.flag?.href || undefined,
+                logo2: p2.athlete?.flag?.href || undefined,
+                score1: score1 || '-',
+                score2: score2 || '-',
+                status: comp.status?.type?.shortDetail || 'In Progress',
+                isLive: true,
+                time: 'LIVE',
+                league: tournamentName,
+                link: comp.links?.[0]?.href || event.links?.[0]?.href || ''
+              });
+            }
+          }
+        });
+      });
     });
 
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data;
-  } catch (err) {
-    console.warn("SportScore API fetch failed, using fallbacks:", err);
-    return null;
+    return matches.slice(0, 10);
+  } catch (error) {
+    console.error("ESPN Tennis fetch error:", error);
+    return [];
   }
 };
 
@@ -95,29 +188,35 @@ router.get('/live', async (req, res) => {
       return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
     };
 
-    // 2. Fetch Live Matches from Providers
-    const [cricketResult, premierLeagueResult, nbaResult] = await Promise.allSettled([
+    // 2. Fetch Live Matches from Providers (Cricket, Premier League Football, ATP Tennis)
+    const [cricketResult, premierLeagueResult, tennisResult] = await Promise.allSettled([
       fetchWithTimeout(parser.parseURL('https://static.cricinfo.com/rss/livescores.xml'), 5000),
-      fetchESPN(
+      fetchESPNFootball(
         'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard',
         'football',
         'English Premier League',
         'https://a.espncdn.com/i/leaguelogos/soccer/500/23.png'
       ),
-      fetchESPN(
-        'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard',
-        'basketball',
-        'NBA',
-        'https://a.espncdn.com/i/leaguelogos/nba/500/nba.png'
-      )
+      fetchESPNTennis()
     ]);
 
-    // Parse Cricket RSS
+    // Parse Cricket RSS - Filter ONLY Active Live Matches
     let cricketMatches: any[] = [];
     if (cricketResult.status === 'fulfilled') {
       const feed = cricketResult.value;
-      cricketMatches = feed.items.reverse().slice(0, 10).map((item, index) => {
-        const parts = item.title?.split(' v ') || [];
+      const rawMatches = feed.items.map((item, index) => {
+        const rawTitle = item.title || '';
+        const lowerTitle = rawTitle.toLowerCase();
+
+        // If the title contains finished status ("won by", "drawn", "abandoned", "no result"), it is NOT live
+        const isFinished =
+          lowerTitle.includes('won by') ||
+          lowerTitle.includes('match drawn') ||
+          lowerTitle.includes('match tied') ||
+          lowerTitle.includes('abandoned') ||
+          lowerTitle.includes('no result');
+
+        const parts = rawTitle.split(' v ');
         const team1Full = parts[0] || 'Team 1';
         const team2Full = parts[1] || 'Team 2';
 
@@ -131,85 +230,53 @@ router.get('/live', async (req, res) => {
         let team2ScoreRaw = team2Full.substring(team2NameMatch ? team2NameMatch[0].length : 0).trim();
         let team2Score = team2ScoreRaw.includes('&') ? team2ScoreRaw.split('&').pop()?.trim() || '' : team2ScoreRaw;
 
-        const isLive = team2ScoreRaw.includes('*') || team1ScoreRaw.includes('*');
+        // An active cricket match has an asterisk (*) on one of the teams indicating active batting,
+        // and is not marked as finished
+        const hasAsterisk = team2ScoreRaw.includes('*') || team1ScoreRaw.includes('*') || rawTitle.includes('*');
+        const isLive = !isFinished && (hasAsterisk || (!team1Score && !team2Score));
+
+        team1Score = team1Score.replace('*', '').trim();
         team2Score = team2Score.replace('*', '').trim();
+
+        // Resolve accurate team flags and league
+        const meta1 = getCricketTeamLogo(team1Name);
+        const meta2 = getCricketTeamLogo(team2Name);
+
+        const leagueName = meta1.league || meta2.league || 'International Cricket';
 
         return {
           id: `cricket-${index}`,
           team1: team1Name || 'Team A',
           team2: team2Name || 'Team B',
-          logo1: `https://flagsapi.com/IN/flat/64.png`,
-          logo2: `https://flagsapi.com/AU/flat/64.png`,
-          score1: team1Score || 'Yet to bat',
-          score2: team2Score || 'Yet to bat',
+          logo1: meta1.logo,
+          logo2: meta2.logo,
+          score1: team1Score ? (team1ScoreRaw.includes('*') ? `${team1Score} *` : team1Score) : 'Yet to bat',
+          score2: team2Score ? (team2ScoreRaw.includes('*') ? `${team2Score} *` : team2Score) : 'Yet to bat',
           status: isLive ? 'In Progress' : 'Match Ended',
           isLive: isLive,
           time: isLive ? 'LIVE' : 'Done',
-          league: 'International Cricket',
-          link: item.link || ''
+          league: leagueName,
+          link: item.link?.trim() || ''
         };
       });
-      cricketMatches.sort((a, b) => (b.isLive === a.isLive ? 0 : b.isLive ? 1 : -1));
+
+      // Strictly KEEP ONLY LIVE MATCHES
+      cricketMatches = rawMatches.filter((m: any) => m.isLive);
     }
 
     const footballMatches = premierLeagueResult.status === 'fulfilled' ? premierLeagueResult.value : [];
-    footballMatches.sort((a: any, b: any) => (b.isLive === a.isLive ? 0 : b.isLive ? 1 : -1));
-
-    const basketballMatches = nbaResult.status === 'fulfilled' ? nbaResult.value : [];
-    basketballMatches.sort((a: any, b: any) => (b.isLive === a.isLive ? 0 : b.isLive ? 1 : -1));
+    const tennisMatches = tennisResult.status === 'fulfilled' ? tennisResult.value : [];
 
     const sportsData = {
-      cricket: cricketMatches.length > 0 ? cricketMatches : [
-        {
-          id: 'c-default1',
-          team1: "India",
-          team2: "Australia",
-          logo1: "https://a.espncdn.com/i/teamlogos/cricket/500/6.png",
-          logo2: "https://a.espncdn.com/i/teamlogos/cricket/500/2.png",
-          score1: "214/4 (20.0)",
-          score2: "189/8 (20.0)",
-          status: "India won by 25 runs",
-          isLive: false,
-          time: "Final",
-          league: "T20 International"
-        }
-      ],
-      football: footballMatches.length > 0 ? footballMatches : [
-        {
-          id: 'f-default1',
-          team1: "Arsenal",
-          team2: "Chelsea",
-          logo1: "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
-          logo2: "https://a.espncdn.com/i/teamlogos/soccer/500/363.png",
-          score1: "2",
-          score2: "1",
-          status: "78' Second Half",
-          isLive: true,
-          time: "78'",
-          league: "Premier League"
-        }
-      ],
-      basketball: basketballMatches.length > 0 ? basketballMatches : [
-        {
-          id: 'b-default1',
-          team1: "Lakers",
-          team2: "Warriors",
-          logo1: "https://a.espncdn.com/i/teamlogos/nba/500/lal.png",
-          logo2: "https://a.espncdn.com/i/teamlogos/nba/500/gs.png",
-          score1: "112",
-          score2: "108",
-          status: "Q4 02:15",
-          isLive: true,
-          time: "Q4 02:15",
-          league: "NBA"
-        }
-      ]
+      cricket: cricketMatches,
+      football: footballMatches,
+      tennis: tennisMatches
     };
 
-    // Save to Redis Cache (60 seconds)
+    // Save to Redis Cache (45 seconds)
     await setCache(SPORTS_CACHE_KEY, sportsData, SPORTS_CACHE_TTL);
 
-    res.json({
+    return res.json({
       success: true,
       data: sportsData,
       cached: false
@@ -217,8 +284,9 @@ router.get('/live', async (req, res) => {
 
   } catch (error) {
     console.error("Sports feed error:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch sports scores" });
+    return res.status(500).json({ success: false, message: "Failed to fetch sports scores" });
   }
 });
 
 export default router;
+
