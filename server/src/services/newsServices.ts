@@ -99,6 +99,7 @@ export const fetchNews = async (
           source: feed.title ?? "Unknown",
           imageUrl: extractImage(item),
           isVideo: !!item.enclosure?.type?.includes("video"),
+          category: category !== "all" ? category : undefined,
         });
       });
     }
