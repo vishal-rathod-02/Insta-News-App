@@ -9,6 +9,7 @@ interface UserContextType {
   addToHistory: (article: NewsArticle) => void;
   clearHistory: () => void;
   isSaved: (articleId: string) => boolean;
+  exportSavedArticles: (format: 'markdown' | 'json' | 'text') => string;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -58,6 +59,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const isSaved = (articleId: string) => savedArticles.some(a => a.id === articleId);
 
+  const exportSavedArticles = (format: 'markdown' | 'json' | 'text' = 'markdown'): string => {
+    if (format === 'json') {
+      return JSON.stringify(savedArticles, null, 2);
+    }
+    if (format === 'text') {
+      return savedArticles
+        .map((a, i) => `${i + 1}. ${a.title}\n   Source: ${a.source || 'Unknown'}\n   Link: ${a.link}\n`)
+        .join('\n');
+    }
+    // Markdown
+    return `# InstaNews - Saved Articles Digest\n*Exported on ${new Date().toLocaleDateString()}*\n\n` +
+      savedArticles
+        .map((a, i) => `### ${i + 1}. [${a.title}](${a.link})\n**Source**: ${a.source || 'News Source'} | **Published**: ${a.pubDate || 'Recent'}\n\n> ${a.contentSnippet || a.content || 'No snippet available'}\n`)
+        .join('\n---\n\n');
+  };
+
   return (
     <UserContext.Provider value={{
       savedArticles,
@@ -66,7 +83,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       removeSavedArticle,
       addToHistory,
       clearHistory,
-      isSaved
+      isSaved,
+      exportSavedArticles
     }}>
       {children}
     </UserContext.Provider>

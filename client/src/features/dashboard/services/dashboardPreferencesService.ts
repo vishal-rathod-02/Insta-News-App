@@ -8,62 +8,118 @@ interface DashboardPreferencesResponse {
   };
 }
 
+const LOCAL_STORAGE_KEY = "user_saved_categories";
+
 /**
- * Fetch user preferences (categories) using either Clerk Bearer token or legacy userId
+ * Fetch user preferences (categories) with fallback resilience
  */
 export const fetchDashboardPreferences = async (
   userId?: string,
   token?: string | null,
 ): Promise<string[]> => {
-  const headers: Record<string, string> = {};
-  let endpoint = `/api/preferences/me`;
-
+  // 1. Try authenticated /api/preferences/me endpoint if token is present
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  } else if (userId) {
-    endpoint = `/api/preferences/${userId}`;
-  } else {
-    return [];
+    try {
+      const response = await fetch(getApiUrl("/api/preferences/me"), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = (await response.json()) as DashboardPreferencesResponse;
+        const categories = data.data?.savedCategories ?? [];
+        if (categories.length > 0) {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(categories));
+        }
+        return categories;
+      }
+    } catch (authErr) {
+      console.warn("Auth token preference fetch failed, attempting fallback:", authErr);
+    }
   }
 
-  const response = await fetch(getApiUrl(endpoint), { headers });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch dashboard preferences.");
+  // 2. Try legacy /api/preferences/:userId endpoint if userId is present
+  if (userId) {
+    try {
+      const response = await fetch(getApiUrl(`/api/preferences/${userId}`));
+      if (response.ok) {
+        const data = (await response.json()) as DashboardPreferencesResponse;
+        const categories = data.data?.savedCategories ?? [];
+        if (categories.length > 0) {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(categories));
+        }
+        return categories;
+      }
+    } catch (userErr) {
+      console.warn("UserId preference fetch failed, using local storage:", userErr);
+    }
   }
 
-  const data = (await response.json()) as DashboardPreferencesResponse;
-  return data.data?.savedCategories ?? [];
+  // 3. Fallback to LocalStorage so UI never breaks
+  try {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch {
+    // Ignore JSON parse errors
+  }
+
+  return [];
 };
 
 /**
- * Save user preferred categories using either Clerk Bearer token or legacy userId
+ * Save user preferred categories with fallback resilience
  */
 export const saveDashboardPreferences = async (
   categories: string[],
   userId?: string,
   token?: string | null,
 ): Promise<void> => {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  let endpoint = `/api/preferences/me/categories`;
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  } else if (userId) {
-    endpoint = `/api/preferences/${userId}/categories`;
-  } else {
-    throw new Error("No authorization token or user ID provided");
+  // Always save locally first for instant offline responsiveness
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(categories));
+  } catch (err) {
+    console.warn("Failed to save categories to localStorage", err);
   }
 
-  const response = await fetch(getApiUrl(endpoint), {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ categories }),
-  });
+  let savedToServer = false;
 
-  if (!response.ok) {
-    throw new Error("Failed to save dashboard preferences.");
+  // 1. Try saving to /api/preferences/me with Bearer token
+  if (token) {
+    try {
+      const response = await fetch(getApiUrl("/api/preferences/me/categories"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ categories }),
+      });
+
+      if (response.ok) {
+        savedToServer = true;
+      }
+    } catch (authErr) {
+      console.warn("Auth token preference save failed, trying fallback:", authErr);
+    }
+  }
+
+  // 2. If not saved yet, try /api/preferences/:userId/categories
+  if (!savedToServer && userId) {
+    try {
+      const response = await fetch(getApiUrl(`/api/preferences/${userId}/categories`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categories }),
+      });
+
+      if (response.ok) {
+        savedToServer = true;
+      }
+    } catch (userErr) {
+      console.warn("UserId preference save failed:", userErr);
+    }
   }
 };
